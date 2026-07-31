@@ -1,31 +1,56 @@
 import { parseCSV } from './csv';
-import type { TravelDay } from '../types/travel';
+
+import type {
+  TravelDay,
+  TravelDocument,
+  PackingItem,
+} from '../types/travel';
+
+/* =========================================================
+   FALLBACK
+   Google Sheet 暫時讀不到時，至少讓網站可以正常顯示。
+========================================================= */
 
 const fallback: TravelDay[] = [
   {
     date: '2026/8/13',
     chapter: '溫哥華',
     title: '抵達溫哥華・海邊夕陽',
+
     dayTemp: '20–25°C',
     nightTemp: '13–17°C',
     level: 1,
     weather: '舒適偏暖｜夏裝即可',
+
     maleOutfit: 'T 恤＋直筒輕薄長褲＋薄襯衫',
     femaleOutfit: 'T 恤／背心＋寬褲＋薄針織',
+
     shoes: '生活休閒鞋',
     outerLayer: '薄襯衫／Cardigan',
+
     notice: '長程移動日，傍晚海邊可能較涼。',
+
     heroImage: '',
     maleImage: '',
     femaleImage: '',
+
     published: true,
+
     itinerary: [],
   },
 ];
 
-function clean(value: string | undefined) {
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function clean(value: string | undefined): string {
   return (value ?? '').trim();
 }
+
+/* =========================================================
+   DAYS
+========================================================= */
 
 export async function getTravelData(): Promise<TravelDay[]> {
   const url = process.env.GOOGLE_SHEET_CSV_URL;
@@ -37,113 +62,252 @@ export async function getTravelData(): Promise<TravelDay[]> {
 
   try {
     const res = await fetch(url, {
-      next: { revalidate: 60 },
+      next: {
+        revalidate: 60,
+      },
     });
 
     if (!res.ok) {
-      throw new Error(`Google Sheet request failed: ${res.status}`);
+      throw new Error(
+        `Google Sheet request failed: ${res.status}`
+      );
     }
 
-    const text = await res.text();
-    const rows = parseCSV(text);
+    const csvText = await res.text();
 
-    if (rows.length < 2) {
+    const rows = parseCSV(csvText);
+
+    if (!rows || rows.length < 2) {
       throw new Error('Days CSV has no data');
     }
 
-    const headers = rows[0].map((header) => clean(header));
+    /* -----------------------------------------------------
+       第一列 = Google Sheet 欄位名稱
+    ----------------------------------------------------- */
 
-    const index = (...names: string[]) => {
+    const headers = rows[0].map((header) =>
+      clean(header)
+    );
+
+    /* -----------------------------------------------------
+       找欄位位置
+       同時支援中文與舊版英文欄位
+    ----------------------------------------------------- */
+
+    const getIndex = (...names: string[]): number => {
       for (const name of names) {
         const found = headers.indexOf(name);
-        if (found !== -1) return found;
+
+        if (found !== -1) {
+          return found;
+        }
       }
+
       return -1;
     };
 
-    const value = (row: string[], ...names: string[]) => {
-      const i = index(...names);
-      return i >= 0 ? clean(row[i]) : '';
+    const getValue = (
+      row: string[],
+      ...names: string[]
+    ): string => {
+      const index = getIndex(...names);
+
+      if (index === -1) {
+        return '';
+      }
+
+      return clean(row[index]);
     };
+
+    /* -----------------------------------------------------
+       Google Sheet → TravelDay
+    ----------------------------------------------------- */
 
     const days: TravelDay[] = rows
       .slice(1)
-      .filter((row) => value(row, '狀態', 'status') === '發布')
-      .map((row) => {
-        const level = Number(
-          value(row, '厚度等級', '厚度', 'level') || '1'
+
+      /* 只顯示「發布」 */
+      .filter((row) => {
+        const status = getValue(
+          row,
+          '狀態',
+          'status'
         );
 
-        return {
-          date: value(row, '日期', 'date'),
-          chapter: value(row, '篇章', 'chapter'),
-          title: value(row, '每日主題', 'title'),
+        return status === '發布';
+      })
 
-          dayTemp: value(row, '白天氣溫', 'dayTemp'),
-          nightTemp: value(row, '早晚氣溫', 'nightTemp'),
+      .map((row) => {
+        const rawLevel = Number(
+          getValue(
+            row,
+            '厚度等級',
+            '厚度',
+            'level'
+          ) || '1'
+        );
 
-          level:
-            Number.isFinite(level) && level >= 1 && level <= 5
-              ? level
-              : 1,
+        const level =
+          Number.isFinite(rawLevel) &&
+          rawLevel >= 1 &&
+          rawLevel <= 5
+            ? rawLevel
+            : 1;
 
-          weather: value(
+        const day: TravelDay = {
+          date: getValue(
+            row,
+            '日期',
+            'date'
+          ),
+
+          chapter: getValue(
+            row,
+            '篇章',
+            'chapter'
+          ),
+
+          title: getValue(
+            row,
+            '每日主題',
+            'title'
+          ),
+
+          dayTemp: getValue(
+            row,
+            '白天氣溫',
+            'dayTemp'
+          ),
+
+          nightTemp: getValue(
+            row,
+            '早晚氣溫',
+            'nightTemp'
+          ),
+
+          level,
+
+          weather: getValue(
             row,
             '厚度結論',
             '天氣說明',
             'weather'
           ),
 
-          maleOutfit: value(row, '男生穿搭', 'maleOutfit'),
-          femaleOutfit: value(row, '女生穿搭', 'femaleOutfit'),
+          maleOutfit: getValue(
+            row,
+            '男生穿搭',
+            'maleOutfit'
+          ),
 
-          shoes: value(row, '鞋款', 'shoes'),
-          outerLayer: value(
+          femaleOutfit: getValue(
+            row,
+            '女生穿搭',
+            'femaleOutfit'
+          ),
+
+          shoes: getValue(
+            row,
+            '鞋款',
+            'shoes'
+          ),
+
+          outerLayer: getValue(
             row,
             '外層',
             '要帶的外層',
             'outerLayer'
           ),
 
-          notice: value(
+          notice: getValue(
             row,
             '提醒',
             '注意事項',
             'notice'
           ),
 
-          heroImage: value(
+          heroImage: getValue(
             row,
             'Hero 圖',
             'Hero圖片',
+            'Hero 圖片',
             'heroImage'
           ),
 
-          maleImage: value(
+          maleImage: getValue(
             row,
             '男生圖片',
+            '男生穿搭圖片',
             'maleImage'
           ),
 
-          femaleImage: value(
+          femaleImage: getValue(
             row,
             '女生圖片',
+            '女生穿搭圖片',
             'femaleImage'
           ),
 
           published: true,
 
-          // 下一步再從 Itinerary 工作表接進來
+          /*
+            下一階段：
+            從 Itinerary 工作表加入資料
+          */
           itinerary: [],
         };
+
+        return day;
       })
-      .filter((day) => day.date);
 
-    console.log(`Loaded ${days.length} published travel days`);
+      /* 避免空白日期資料進網站 */
+      .filter((day) => Boolean(day.date));
 
-    return days.length > 0 ? days : fallback;
+    console.log(
+      `Loaded ${days.length} published travel days`
+    );
+
+    if (days.length === 0) {
+      console.warn(
+        'No published Days found. Using fallback.'
+      );
+
+      return fallback;
+    }
+
+    return days;
   } catch (error) {
-    console.error('Failed to load Days CSV:', error);
+    console.error(
+      'Failed to load Days CSV:',
+      error
+    );
+
     return fallback;
   }
+}
+
+/* =========================================================
+   DOCUMENTS
+
+   目前先保留 API，避免 page.tsx Build Error。
+   下一階段再接 Documents Google Sheet。
+========================================================= */
+
+export async function getTravelDocuments(): Promise<
+  TravelDocument[]
+> {
+  return [];
+}
+
+/* =========================================================
+   PACKING
+
+   目前先保留 API，避免 page.tsx Build Error。
+   下一階段再接 Packing Google Sheet。
+========================================================= */
+
+export async function getPackingItems(): Promise<
+  PackingItem[]
+> {
+  return [];
 }
