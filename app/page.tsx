@@ -1,0 +1,13 @@
+'use client';
+import {useEffect,useState} from 'react'; import {stops} from '../data/travelData';
+const stars=(n:number)=>'★'.repeat(n)+'☆'.repeat(5-n);
+const pack=['T 恤','長袖','選配保暖底層','Sweatshirt','刷毛中層','針織／Cardigan','輕至中量羽絨','防風／防水外套','城市長褲','戶外長褲','選配保暖內搭褲','生活休閒鞋','越野／健行鞋','太陽眼鏡','帽子','毛帽','薄手套','保暖襪'];
+export default function Page(){const [day,setDay]=useState(0);const [done,setDone]=useState<string[]>([]);useEffect(()=>{setDone(JSON.parse(localStorage.getItem('packing')||'[]'))},[]);const toggle=(x:string)=>{const n=done.includes(x)?done.filter(i=>i!==x):[...done,x];setDone(n);localStorage.setItem('packing',JSON.stringify(n))};return <main>
+<section className="hero"><div><small>2026.08.13 — 08.28</small><h1>CANADA<br/>2026</h1><p>17 天 · 4 種氣候篇章 · 一套衣櫥</p><p>溫哥華 → 黃刀鎮 → 加拿大洛磯山脈 → 溫哥華</p></div></section>
+<section id="today"><p className="eyebrow">今天穿什麼？</p><h2>5 秒看懂今天怎麼穿</h2><select value={day} onChange={e=>setDay(+e.target.value)}>{stops.map((s,i)=><option key={s.key} value={i}>{s.date}｜{s.place}</option>)}</select><Card s={stops[day]}/></section>
+<section id="places"><p className="eyebrow">氣候篇章</p><h2>每一站，先看溫度與厚度</h2>{stops.map(s=><Card key={s.key} s={s}/>)}</section>
+<section id="levels"><p className="eyebrow">穿搭厚度</p><h2>五級分層系統</h2>{[['1','20°C 以上','T 恤／襯衫＋輕薄下身'],['2','15–20°C','T 恤＋薄襯衫外套／Cardigan'],['3','10–15°C','長袖＋薄刷毛＋防風外套'],['4','5–10°C','貼身底層＋刷毛／針織＋輕至中量羽絨'],['5','0–5°C 或高山強風','底層＋刷毛＋羽絨＋防風／防水 Shell']].map(x=><article className="level" key={x[0]}><b>LEVEL {x[0]}　{stars(+x[0])}</b><span>{x[1]}</span><p>{x[2]}</p></article>)}</section>
+<section id="packing"><p className="eyebrow">17 天行李清單</p><h2>按 Layer 準備</h2><div className="check">{pack.map(x=><button onClick={()=>toggle(x)} className={done.includes(x)?'done':''} key={x}>{done.includes(x)?'✓':'□'} {x}</button>)}</div></section>
+<p className="disclaimer">氣溫為 8 月歷史氣候與高海拔環境的穿搭規劃參考；實際出發前請依當日天氣預報調整。</p>
+<nav><a href="#today">今天</a><a href="#places">地點</a><a href="#levels">厚度</a><a href="#packing">行李</a></nav></main>}
+function Card({s}:{s:any}){return <article className="card"><div className="meta">{s.date} · {s.place}</div><div className="temp">{s.day}</div><p>早晚／環境：{s.night}</p><strong>{stars(s.level)}　LEVEL {s.level}</strong><h3>{s.summary}</h3><div className="looks"><div className="photo">真人穿搭攝影<br/><small>IMAGE_PROMPT：韓國男性全身 editorial lookbook；依此站溫度真實分層，頭到鞋完整入鏡。</small></div><div><b>男生</b><p>{s.male}</p><b>女生</b><p>{s.female}</p><b>鞋款</b><p>{s.shoe}</p></div></div></article>}
