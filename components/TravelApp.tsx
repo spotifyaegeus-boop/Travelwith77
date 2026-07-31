@@ -1,10 +1,19 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { TravelDay } from '../types/travel';
 
-type PageName = 'today' | 'overview' | 'documents' | 'packing';
-type OverviewView = 'list' | 'detail';
+import type {
+  TravelDay,
+  TravelDocument,
+  PackingItem,
+} from '../types/travel';
+
+type PageName =
+  | 'today'
+  | 'overview'
+  | 'documents'
+  | 'packing';
+
 type DayView = 'detail' | 'level';
 
 /* =========================================================
@@ -45,7 +54,7 @@ function BagIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <rect x="5" y="7" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M9 7V5a3 3 0 0 1 6 0v2M9 11v6M15 11v6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M9 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
@@ -86,35 +95,43 @@ function ImageIcon() {
 }
 
 /* =========================================================
-   DATE HELPERS
+   DATE
 ========================================================= */
 
 function normalizeDate(date: string) {
   return date.replace(/-/g, '/');
 }
 
-function dateToNumber(date: string) {
-  return Number(normalizeDate(date).replace(/\//g, ''));
+function dateNumber(date: string) {
+  const [year, month, day] = normalizeDate(date)
+    .split('/')
+    .map(Number);
+
+  return year * 10000 + month * 100 + day;
 }
 
 function formatDate(date: string) {
-  const parts = normalizeDate(date).split('/');
+  const [, month, day] = normalizeDate(date).split('/');
 
-  if (parts.length >= 3) {
-    return `${parts[1]}.${parts[2]}`;
-  }
-
-  return date;
+  return `${String(Number(month)).padStart(2, '0')}.${String(
+    Number(day)
+  ).padStart(2, '0')}`;
 }
 
 function getWeekday(date: string) {
-  const normalized = normalizeDate(date).replace(/\//g, '-');
-  const parsed = new Date(`${normalized}T12:00:00`);
+  const [year, month, day] = normalizeDate(date)
+    .split('/')
+    .map(Number);
 
-  if (Number.isNaN(parsed.getTime())) return '';
+  if (!year || !month || !day) return '';
+
+  const parsed = new Date(
+    Date.UTC(year, month - 1, day, 12)
+  );
 
   return new Intl.DateTimeFormat('zh-TW', {
     weekday: 'long',
+    timeZone: 'UTC',
   }).format(parsed);
 }
 
@@ -126,58 +143,61 @@ function getDateInTimeZone(timeZone: string) {
     day: '2-digit',
   }).formatToParts(new Date());
 
-  const year = parts.find((part) => part.type === 'year')?.value ?? '';
-  const month = parts.find((part) => part.type === 'month')?.value ?? '';
-  const day = parts.find((part) => part.type === 'day')?.value ?? '';
+  const year =
+    parts.find((x) => x.type === 'year')?.value || '';
+
+  const month =
+    parts.find((x) => x.type === 'month')?.value || '';
+
+  const day =
+    parts.find((x) => x.type === 'day')?.value || '';
 
   return `${year}/${month}/${day}`;
 }
 
 /*
-  旅行日期邏輯：
-
-  08/13–08/15 Vancouver
-  08/16–08/18 Yellowknife
-  08/19–08/26 Alberta
-  08/27–08/28 Vancouver
-
-  08/13 前 → 固定顯示 08/13
-  旅行期間 → 加拿大當地日期
-  08/28 後 → 固定顯示 08/28
+  8/13 前：顯示第一天
+  旅行期間：依所在地日期
+  8/28 後：顯示最後一天
 */
 
 function getTripTodayDate() {
-  const vancouverDate = getDateInTimeZone('America/Vancouver');
-  const mountainDate = getDateInTimeZone('America/Edmonton');
+  const vancouver = getDateInTimeZone(
+    'America/Vancouver'
+  );
 
-  const vancouverNumber = dateToNumber(vancouverDate);
-  const mountainNumber = dateToNumber(mountainDate);
+  const mountain = getDateInTimeZone(
+    'America/Edmonton'
+  );
 
-  if (vancouverNumber < 20260813 && mountainNumber < 20260813) {
-    return '2026/08/13';
+  const v = dateNumber(vancouver);
+  const m = dateNumber(mountain);
+
+  if (v < 20260813 && m < 20260813) {
+    return '2026/8/13';
   }
 
-  if (vancouverNumber > 20260828 && mountainNumber > 20260828) {
-    return '2026/08/28';
+  if (v > 20260828 && m > 20260828) {
+    return '2026/8/28';
   }
 
-  if (vancouverNumber >= 20260813 && vancouverNumber <= 20260815) {
-    return vancouverDate;
+  if (v >= 20260813 && v <= 20260815) {
+    return vancouver;
   }
 
-  if (mountainNumber >= 20260816 && mountainNumber <= 20260826) {
-    return mountainDate;
+  if (m >= 20260816 && m <= 20260826) {
+    return mountain;
   }
 
-  if (vancouverNumber >= 20260827 && vancouverNumber <= 20260828) {
-    return vancouverDate;
+  if (v >= 20260827 && v <= 20260828) {
+    return vancouver;
   }
 
-  return vancouverDate;
+  return vancouver;
 }
 
 /* =========================================================
-   LEVEL SYSTEM
+   LEVELS
 ========================================================= */
 
 const levelGuides = {
@@ -185,7 +205,7 @@ const levelGuides = {
     title: '夏季輕裝',
     temperature: '20°C 以上',
     summary: '天氣溫暖，以透氣、輕量與防曬為主。',
-    morning: '短袖或透氣上衣即可；怕冷的人可帶一件薄襯衫。',
+    morning: '短袖或透氣上衣即可；怕冷的人可帶薄襯衫。',
     daytime: '短袖、薄長褲或輕量下身，注意防曬與補水。',
     evening: '若靠海或有風，可加一件非常薄的外層。',
     base: '短袖 T-shirt、透氣排汗上衣',
@@ -264,65 +284,59 @@ function safeLevel(level: number): 1 | 2 | 3 | 4 | 5 {
   return Math.round(level) as 1 | 2 | 3 | 4 | 5;
 }
 
-function levelName(level: number) {
-  return levelGuides[safeLevel(level)].title;
-}
-
 /* =========================================================
-   PACKING
-========================================================= */
-
-const packingItems = [
-  '護照',
-  '加拿大 eTA',
-  '國際駕照',
-  '台灣駕照正本',
-  '信用卡',
-  '旅遊保險資料',
-  '航班與住宿憑證',
-  '租車預約資料',
-  '手機與充電器',
-  '行動電源',
-  '加拿大轉接插頭',
-  '常用藥品',
-  '薄外套',
-  '防風防水外套',
-  '保暖中層',
-  '舒適步行鞋',
-  '墨鏡',
-  '防曬用品',
-  '帽子',
-  '水壺',
-];
-
-/* =========================================================
-   MAIN APP
+   APP
 ========================================================= */
 
 export default function TravelApp({
   days,
+  documents,
+  packingItems,
 }: {
   days: TravelDay[];
+  documents: TravelDocument[];
+  packingItems: PackingItem[];
 }) {
   const publishedDays = useMemo(
-    () => days.filter((day) => day.published !== false),
+    () =>
+      days
+        .filter((day) => day.published !== false)
+        .sort(
+          (a, b) =>
+            dateNumber(a.date) - dateNumber(b.date)
+        ),
     [days]
   );
 
+  const publishedDocuments = useMemo(
+    () =>
+      documents.filter(
+        (document) => document.published !== false
+      ),
+    [documents]
+  );
+
+  const publishedPacking = useMemo(
+    () =>
+      packingItems.filter(
+        (item) => item.published !== false
+      ),
+    [packingItems]
+  );
+
   const chapters = useMemo(
-    () => [...new Set(publishedDays.map((day) => day.chapter))],
+    () => [
+      ...new Set(
+        publishedDays.map((day) => day.chapter)
+      ),
+    ],
     [publishedDays]
   );
 
-  const [page, setPage] = useState<PageName>('today');
+  const [page, setPage] =
+    useState<PageName>('today');
 
   const [todayView, setTodayView] =
-    useState<DayView>('detail');
-
-  const [overviewView, setOverviewView] =
-    useState<OverviewView>('list');
-
-  const [overviewDayView, setOverviewDayView] =
     useState<DayView>('detail');
 
   const [overviewDate, setOverviewDate] =
@@ -330,6 +344,12 @@ export default function TravelApp({
 
   const [overviewChapter, setOverviewChapter] =
     useState('全部');
+
+  const [overviewView, setOverviewView] =
+    useState<'list' | 'detail'>('list');
+
+  const [overviewDayView, setOverviewDayView] =
+    useState<DayView>('detail');
 
   const [checkedItems, setCheckedItems] =
     useState<string[]>([]);
@@ -339,23 +359,24 @@ export default function TravelApp({
   const todayDay =
     publishedDays.find(
       (day) =>
-        normalizeDate(day.date) === normalizeDate(todayDate)
-    ) || publishedDays[0];
+        dateNumber(day.date) ===
+        dateNumber(todayDate)
+    ) ||
+    publishedDays[0];
 
   const overviewDay =
     publishedDays.find(
       (day) => day.date === overviewDate
-    ) || publishedDays[0];
+    ) ||
+    publishedDays[0];
 
-  const overviewDays = useMemo(() => {
-    if (overviewChapter === '全部') {
-      return publishedDays;
-    }
-
-    return publishedDays.filter(
-      (day) => day.chapter === overviewChapter
-    );
-  }, [publishedDays, overviewChapter]);
+  const overviewDays =
+    overviewChapter === '全部'
+      ? publishedDays
+      : publishedDays.filter(
+          (day) =>
+            day.chapter === overviewChapter
+        );
 
   function goTop() {
     window.scrollTo({
@@ -386,62 +407,13 @@ export default function TravelApp({
     goTop();
   }
 
-  function backToOverview() {
-    setOverviewView('list');
-    setOverviewDayView('detail');
-    goTop();
-  }
-
-  function openTodayLevel() {
-    setTodayView('level');
-    goTop();
-  }
-
-  function closeTodayLevel() {
-    setTodayView('detail');
-    goTop();
-  }
-
-  function openOverviewLevel() {
-    setOverviewDayView('level');
-    goTop();
-  }
-
-  function closeOverviewLevel() {
-    setOverviewDayView('detail');
-    goTop();
-  }
-
-  function togglePacking(item: string) {
+  function togglePacking(id: string) {
     setCheckedItems((current) =>
-      current.includes(item)
-        ? current.filter((x) => x !== item)
-        : [...current, item]
+      current.includes(id)
+        ? current.filter((x) => x !== id)
+        : [...current, id]
     );
   }
-
-  const navItems = [
-    {
-      id: 'today' as PageName,
-      label: '今日',
-      icon: <CalendarIcon />,
-    },
-    {
-      id: 'overview' as PageName,
-      label: '總覽',
-      icon: <OverviewIcon />,
-    },
-    {
-      id: 'documents' as PageName,
-      label: '檔案',
-      icon: <FileIcon />,
-    },
-    {
-      id: 'packing' as PageName,
-      label: '行李',
-      icon: <BagIcon />,
-    },
-  ];
 
   if (!publishedDays.length) {
     return (
@@ -449,9 +421,16 @@ export default function TravelApp({
         <SiteHeader />
 
         <section className="contentPage">
-          <p className="eyebrow">CANADA 2026</p>
+          <p className="eyebrow">
+            CANADA 2026
+          </p>
+
           <h2>目前沒有可顯示的行程</h2>
-          <p>請確認至少有一天行程設定為發布。</p>
+
+          <p>
+            請確認 V4 Google Sheet 的 Days
+            工作表已有「發布」中的行程。
+          </p>
         </section>
       </main>
     );
@@ -468,8 +447,11 @@ export default function TravelApp({
         todayView === 'detail' && (
           <DayDetail
             day={todayDay}
-            mode="today"
-            onOpenLevel={openTodayLevel}
+            documents={publishedDocuments}
+            onOpenLevel={() => {
+              setTodayView('level');
+              goTop();
+            }}
           />
         )}
 
@@ -478,8 +460,10 @@ export default function TravelApp({
         todayView === 'level' && (
           <LevelGuidePage
             day={todayDay}
-            onBack={closeTodayLevel}
-            backLabel={`返回 ${formatDate(todayDay.date)} 行程`}
+            onBack={() => {
+              setTodayView('detail');
+              goTop();
+            }}
           />
         )}
 
@@ -491,7 +475,9 @@ export default function TravelApp({
             days={overviewDays}
             chapters={chapters}
             activeChapter={overviewChapter}
-            onChapterChange={setOverviewChapter}
+            onChapterChange={
+              setOverviewChapter
+            }
             onOpenDay={openOverviewDay}
           />
         )}
@@ -500,11 +486,14 @@ export default function TravelApp({
         overviewView === 'detail' &&
         overviewDay &&
         overviewDayView === 'detail' && (
-          <div>
+          <>
             <div className="subPageHeader">
               <button
                 className="backButton"
-                onClick={backToOverview}
+                onClick={() => {
+                  setOverviewView('list');
+                  goTop();
+                }}
               >
                 <BackIcon />
                 返回行程總覽
@@ -513,10 +502,13 @@ export default function TravelApp({
 
             <DayDetail
               day={overviewDay}
-              mode="overview"
-              onOpenLevel={openOverviewLevel}
+              documents={publishedDocuments}
+              onOpenLevel={() => {
+                setOverviewDayView('level');
+                goTop();
+              }}
             />
-          </div>
+          </>
         )}
 
       {page === 'overview' &&
@@ -525,46 +517,90 @@ export default function TravelApp({
         overviewDayView === 'level' && (
           <LevelGuidePage
             day={overviewDay}
-            onBack={closeOverviewLevel}
-            backLabel={`返回 ${formatDate(overviewDay.date)} 行程`}
+            onBack={() => {
+              setOverviewDayView('detail');
+              goTop();
+            }}
           />
         )}
 
       {/* DOCUMENTS */}
 
-      {page === 'documents' && <DocumentsPage />}
+      {page === 'documents' && (
+        <DocumentsPage
+          documents={publishedDocuments}
+        />
+      )}
 
       {/* PACKING */}
 
       {page === 'packing' && (
         <PackingPage
+          items={publishedPacking}
           checkedItems={checkedItems}
           onToggle={togglePacking}
         />
       )}
 
-      {/* NAV */}
-
       <nav
         className="bottomNav"
         aria-label="主要導覽"
       >
-        {navItems.map((item) => (
-          <a
-            key={item.id}
-            href={`#${item.id}`}
-            className={
-              page === item.id ? 'active' : ''
-            }
-            onClick={(event) => {
-              event.preventDefault();
-              switchPage(item.id);
-            }}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </a>
-        ))}
+        <a
+          href="#today"
+          className={
+            page === 'today' ? 'active' : ''
+          }
+          onClick={(event) => {
+            event.preventDefault();
+            switchPage('today');
+          }}
+        >
+          <CalendarIcon />
+          <span>今日</span>
+        </a>
+
+        <a
+          href="#overview"
+          className={
+            page === 'overview' ? 'active' : ''
+          }
+          onClick={(event) => {
+            event.preventDefault();
+            switchPage('overview');
+          }}
+        >
+          <OverviewIcon />
+          <span>總覽</span>
+        </a>
+
+        <a
+          href="#documents"
+          className={
+            page === 'documents' ? 'active' : ''
+          }
+          onClick={(event) => {
+            event.preventDefault();
+            switchPage('documents');
+          }}
+        >
+          <FileIcon />
+          <span>檔案</span>
+        </a>
+
+        <a
+          href="#packing"
+          className={
+            page === 'packing' ? 'active' : ''
+          }
+          onClick={(event) => {
+            event.preventDefault();
+            switchPage('packing');
+          }}
+        >
+          <BagIcon />
+          <span>行李</span>
+        </a>
       </nav>
     </main>
   );
@@ -588,36 +624,26 @@ function SiteHeader() {
 }
 
 /* =========================================================
-   DAY DETAIL
-
-   新結構：
-
-   1. 日期 / 主題
-   2. LEVEL 穿搭入口
-   3. 天氣
-   4. HERO
-   5. 行程
-
-   DAILY WARDROBE 已完全移除
+   DAY
 ========================================================= */
 
 function DayDetail({
   day,
-  mode,
+  documents,
   onOpenLevel,
 }: {
   day: TravelDay;
-  mode: 'today' | 'overview';
+  documents: TravelDocument[];
   onOpenLevel: () => void;
 }) {
+  const level = safeLevel(day.level);
+
   return (
     <div className="todayPage">
-
-      {/* HERO INFO */}
-
       <section className="todayHero">
         <p className="dateLabel">
-          {formatDate(day.date)} ・ {getWeekday(day.date)}
+          {formatDate(day.date)} ・{' '}
+          {getWeekday(day.date)}
         </p>
 
         <h1>{day.title}</h1>
@@ -625,8 +651,6 @@ function DayDetail({
         <p className="chapterLabel">
           {day.chapter}
         </p>
-
-        {/* 穿搭唯一入口 */}
 
         <button
           className="levelButton"
@@ -636,15 +660,13 @@ function DayDetail({
             <span>建議穿著</span>
 
             <strong>
-              LEVEL {safeLevel(day.level)}
-              ｜{levelName(day.level)}
+              LEVEL {level}｜
+              {levelGuides[level].title}
             </strong>
           </div>
 
           <ArrowIcon />
         </button>
-
-        {/* WEATHER */}
 
         <div className="weatherGrid">
           <div>
@@ -663,13 +685,6 @@ function DayDetail({
         </p>
       </section>
 
-      {/* =====================================================
-          DAILY HERO IMAGE
-
-          有 heroImage → 顯示圖片
-          沒有 heroImage → 保留完整 Hero 位置
-      ===================================================== */}
-
       <figure className="destinationHero">
         {day.heroImage ? (
           <>
@@ -679,12 +694,7 @@ function DayDetail({
             />
 
             <figcaption>
-              <span>
-                {mode === 'today'
-                  ? "TODAY'S HIGHLIGHT"
-                  : 'DAY HIGHLIGHT'}
-              </span>
-
+              <span>TODAY&apos;S HIGHLIGHT</span>
               <strong>{day.title}</strong>
             </figcaption>
           </>
@@ -693,21 +703,16 @@ function DayDetail({
             <ImageIcon />
 
             <div>
-              <span>TODAY'S HIGHLIGHT</span>
-
-              <strong>
-                當日精選景色
-              </strong>
-
+              <span>TODAY&apos;S HIGHLIGHT</span>
+              <strong>當日精選景色</strong>
               <p>
-                {formatDate(day.date)} ・ {day.title}
+                {formatDate(day.date)} ・{' '}
+                {day.title}
               </p>
             </div>
           </div>
         )}
       </figure>
-
-      {/* DAILY JOURNEY */}
 
       <section className="routeSection">
         <p className="eyebrow">
@@ -718,38 +723,85 @@ function DayDetail({
 
         <div className="timeline">
           {day.itinerary.map(
-            (item, index) => (
-              <div
-                className="stop"
-                key={`${item.time}-${item.place}-${index}`}
-              >
-                <time>
-                  {item.time}
-                </time>
+            (item, index) => {
+              const linkedDocuments =
+                (item.documentIds || [])
+                  .map((id) =>
+                    documents.find(
+                      (document) =>
+                        document.id === id
+                    )
+                  )
+                  .filter(
+                    (
+                      document
+                    ): document is TravelDocument =>
+                      Boolean(document)
+                  );
 
-                <div>
-                  <b>{item.place}</b>
+              return (
+                <div
+                  className="stop"
+                  key={`${item.time}-${item.place}-${index}`}
+                >
+                  <time>{item.time}</time>
 
-                  {item.description && (
-                    <p>
-                      {item.description}
-                    </p>
-                  )}
+                  <div>
+                    <b>{item.place}</b>
 
-                  {item.mapUrl && (
-                    <a
-                      className="mapLink"
-                      href={item.mapUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <MapIcon />
-                      Google Maps
-                    </a>
-                  )}
+                    {item.description && (
+                      <p>{item.description}</p>
+                    )}
+
+                    <div className="stopActions">
+                      {item.mapUrl && (
+                        <a
+                          className="mapLink"
+                          href={item.mapUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <MapIcon />
+                          Google Maps
+                        </a>
+                      )}
+
+                      {linkedDocuments.map(
+                        (document) =>
+                          document.url ? (
+                            <a
+                              key={document.id}
+                              className="documentTag"
+                              href={document.url}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <FileIcon />
+
+                              <span>
+                                {document.category}
+                                ｜{document.name}
+                              </span>
+                            </a>
+                          ) : (
+                            <span
+                              key={document.id}
+                              className="documentTag disabled"
+                            >
+                              <FileIcon />
+
+                              <span>
+                                {document.category}
+                                ｜{document.name}
+                              </span>
+                            </span>
+                          )
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )
+              );
+            }
           )}
         </div>
       </section>
@@ -764,29 +816,24 @@ function DayDetail({
 function LevelGuidePage({
   day,
   onBack,
-  backLabel,
 }: {
   day: TravelDay;
   onBack: () => void;
-  backLabel: string;
 }) {
   const level = safeLevel(day.level);
   const guide = levelGuides[level];
 
   return (
     <div className="levelGuidePage">
-
       <div className="subPageHeader">
         <button
           className="backButton"
           onClick={onBack}
         >
           <BackIcon />
-          {backLabel}
+          返回 {formatDate(day.date)} 行程
         </button>
       </div>
-
-      {/* LEVEL HERO */}
 
       <section className="levelGuideHero">
         <p className="eyebrow lightEyebrow">
@@ -811,20 +858,15 @@ function LevelGuidePage({
           <span>套用到這一天</span>
 
           <strong>
-            {formatDate(day.date)}
-            {' ・ '}
-            {day.title}
+            {formatDate(day.date)} ・ {day.title}
           </strong>
 
           <small>
-            白天 {day.dayTemp}
-            {' ／ '}
-            早晚 {day.nightTemp}
+            白天 {day.dayTemp} ／ 早晚{' '}
+            {day.nightTemp}
           </small>
         </div>
       </section>
-
-      {/* TIME OF DAY */}
 
       <section className="levelContent">
         <p className="eyebrow">
@@ -834,7 +876,6 @@ function LevelGuidePage({
         <h2>早晚怎麼穿</h2>
 
         <div className="timeWearGrid">
-
           <article>
             <span>早上</span>
             <strong>MORNING</strong>
@@ -852,11 +893,8 @@ function LevelGuidePage({
             <strong>EVENING</strong>
             <p>{guide.evening}</p>
           </article>
-
         </div>
       </section>
-
-      {/* LAYERS */}
 
       <section className="layerSection">
         <p className="eyebrow">
@@ -866,85 +904,48 @@ function LevelGuidePage({
         <h2>分層穿搭</h2>
 
         <div className="layerList">
+          <LayerRow
+            number="01"
+            title="底層 Base Layer"
+            text={guide.base}
+          />
 
-          <div>
-            <span>01</span>
+          <LayerRow
+            number="02"
+            title="中層 Mid Layer"
+            text={guide.mid}
+          />
 
-            <div>
-              <b>
-                底層 Base Layer
-              </b>
+          <LayerRow
+            number="03"
+            title="外層 Outer Layer"
+            text={guide.outer}
+          />
 
-              <p>{guide.base}</p>
-            </div>
-          </div>
+          <LayerRow
+            number="04"
+            title="下身 Bottom"
+            text={guide.bottom}
+          />
 
-          <div>
-            <span>02</span>
-
-            <div>
-              <b>
-                中層 Mid Layer
-              </b>
-
-              <p>{guide.mid}</p>
-            </div>
-          </div>
-
-          <div>
-            <span>03</span>
-
-            <div>
-              <b>
-                外層 Outer Layer
-              </b>
-
-              <p>{guide.outer}</p>
-            </div>
-          </div>
-
-          <div>
-            <span>04</span>
-
-            <div>
-              <b>
-                下身 Bottom
-              </b>
-
-              <p>{guide.bottom}</p>
-            </div>
-          </div>
-
-          <div>
-            <span>05</span>
-
-            <div>
-              <b>
-                鞋款 Shoes
-              </b>
-
-              <p>{guide.shoes}</p>
-            </div>
-          </div>
-
+          <LayerRow
+            number="05"
+            title="鞋款 Shoes"
+            text={guide.shoes}
+          />
         </div>
       </section>
 
-      {/* BRING */}
-
       <section className="bringSection">
         <p className="eyebrow">
-          DON'T FORGET
+          DON&apos;T FORGET
         </p>
 
         <h2>記得帶</h2>
 
         <div className="bringCard">
           <BagIcon />
-
-          <p>
-            {guide.bring}
-          </p>
+          <p>{guide.bring}</p>
         </div>
 
         {day.notice && (
@@ -953,6 +954,27 @@ function LevelGuidePage({
           </p>
         )}
       </section>
+    </div>
+  );
+}
+
+function LayerRow({
+  number,
+  title,
+  text,
+}: {
+  number: string;
+  title: string;
+  text: string;
+}) {
+  return (
+    <div>
+      <span>{number}</span>
+
+      <div>
+        <b>{title}</b>
+        <p>{text}</p>
+      </div>
     </div>
   );
 }
@@ -983,7 +1005,6 @@ function OverviewPage({
       <h2>行程總覽</h2>
 
       <div className="chapterTabs">
-
         <button
           className={
             activeChapter === '全部'
@@ -1012,11 +1033,9 @@ function OverviewPage({
             {chapter}
           </button>
         ))}
-
       </div>
 
       <div className="dayList">
-
         {days.map((day) => (
           <button
             key={day.date}
@@ -1030,16 +1049,11 @@ function OverviewPage({
               {getWeekday(day.date)}
             </span>
 
-            <strong>
-              {day.title}
-            </strong>
+            <strong>{day.title}</strong>
 
-            <small>
-              {day.chapter}
-            </small>
+            <small>{day.chapter}</small>
           </button>
         ))}
-
       </div>
     </section>
   );
@@ -1049,7 +1063,44 @@ function OverviewPage({
    DOCUMENTS
 ========================================================= */
 
-function DocumentsPage() {
+function DocumentsPage({
+  documents,
+}: {
+  documents: TravelDocument[];
+}) {
+  const categories = [
+    '航班',
+    '住宿',
+    '租車',
+    '景點',
+    '保險',
+    '其他',
+  ];
+
+  if (!documents.length) {
+    return (
+      <section className="contentPage">
+        <p className="eyebrow">
+          TRAVEL DOCUMENTS
+        </p>
+
+        <h2>重要檔案</h2>
+
+        <div className="emptyCard">
+          <FileIcon />
+
+          <strong>目前沒有已發布的檔案</strong>
+
+          <p>
+            在 Google Sheet 的 Documents
+            工作表新增文件並將狀態設為「發布」後，
+            會自動出現在這裡。
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="contentPage">
       <p className="eyebrow">
@@ -1058,17 +1109,64 @@ function DocumentsPage() {
 
       <h2>重要檔案</h2>
 
-      <div className="emptyCard">
-        <FileIcon />
+      <div className="documentGroups">
+        {categories.map((category) => {
+          const group = documents.filter(
+            (document) =>
+              document.category === category
+          );
 
-        <strong>
-          旅行文件
-        </strong>
+          if (!group.length) return null;
 
-        <p>
-          航班、住宿、租車、景點、保險等重要憑證與下載連結，
-          之後統一整理在這裡。
-        </p>
+          return (
+            <section
+              className="documentGroup"
+              key={category}
+            >
+              <h3>{category}</h3>
+
+              <div className="documentList">
+                {group.map((document) => (
+                  <article
+                    className="documentCard"
+                    key={document.id}
+                  >
+                    <div>
+                      <span>
+                        {document.date || category}
+                      </span>
+
+                      <strong>
+                        {document.name}
+                      </strong>
+
+                      {document.description && (
+                        <p>
+                          {document.description}
+                        </p>
+                      )}
+                    </div>
+
+                    {document.url ? (
+                      <a
+                        href={document.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        查看檔案
+                        <ArrowIcon />
+                      </a>
+                    ) : (
+                      <span className="fileUnavailable">
+                        尚未上傳
+                      </span>
+                    )}
+                  </article>
+                ))}
+              </div>
+            </section>
+          );
+        })}
       </div>
     </section>
   );
@@ -1079,17 +1177,23 @@ function DocumentsPage() {
 ========================================================= */
 
 function PackingPage({
+  items,
   checkedItems,
   onToggle,
 }: {
+  items: PackingItem[];
   checkedItems: string[];
-  onToggle: (item: string) => void;
+  onToggle: (id: string) => void;
 }) {
-  const completed =
-    checkedItems.length;
+  const categories = [
+    ...new Set(
+      items.map((item) => item.category)
+    ),
+  ];
 
-  const total =
-    packingItems.length;
+  const completed = items.filter((item) =>
+    checkedItems.includes(item.id)
+  ).length;
 
   return (
     <section className="contentPage">
@@ -1100,38 +1204,97 @@ function PackingPage({
       <h2>行李清單</h2>
 
       <div className="packingProgress">
-        <span>
-          準備進度
-        </span>
+        <span>準備進度</span>
 
         <strong>
-          {completed} / {total}
+          {completed} / {items.length}
         </strong>
       </div>
 
-      <div className="checklistPreview">
+      {!items.length ? (
+        <div className="emptyCard">
+          <BagIcon />
 
-        {packingItems.map((item) => (
-          <label key={item}>
+          <strong>
+            目前沒有已發布的行李項目
+          </strong>
 
-            <input
-              type="checkbox"
-              checked={
-                checkedItems.includes(item)
-              }
-              onChange={() =>
-                onToggle(item)
-              }
-            />
+          <p>
+            直接到 Google Sheet 的 Packing
+            工作表新增即可。
+          </p>
+        </div>
+      ) : (
+        <div className="packingGroups">
+          {categories.map((category) => (
+            <section
+              className="packingGroup"
+              key={category}
+            >
+              <h3>{category}</h3>
 
-            <span>
-              {item}
-            </span>
+              <div className="checklistPreview">
+                {items
+                  .filter(
+                    (item) =>
+                      item.category === category
+                  )
+                  .map((item) => (
+                    <label
+                      key={item.id}
+                      className={
+                        checkedItems.includes(
+                          item.id
+                        )
+                          ? 'checked'
+                          : ''
+                      }
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checkedItems.includes(
+                          item.id
+                        )}
+                        onChange={() =>
+                          onToggle(item.id)
+                        }
+                      />
 
-          </label>
-        ))}
+                      <span className="packingItemContent">
+                        <strong>
+                          {item.name}
 
-      </div>
+                          {item.important && (
+                            <small className="importantTag">
+                              重要
+                            </small>
+                          )}
+                        </strong>
+
+                        {(item.quantity ||
+                          item.description) && (
+                          <small>
+                            {item.quantity
+                              ? `建議 ${item.quantity}`
+                              : ''}
+
+                            {item.quantity &&
+                            item.description
+                              ? ' ・ '
+                              : ''}
+
+                            {item.description ||
+                              ''}
+                          </small>
+                        )}
+                      </span>
+                    </label>
+                  ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
