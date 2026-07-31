@@ -63,5 +63,8 @@ export type PackingItem = {
   description?: string;
   important?: boolean;
 
+  /* Google Sheet「預設完成」欄位 */
+  defaultCompleted?: boolean;
+
   published: boolean;
 };
