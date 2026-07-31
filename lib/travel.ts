@@ -137,6 +137,32 @@ function normalizeDate(value: string): string {
   return normalized;
 }
 
+/*
+  Google Sheet boolean 欄位轉換。
+
+  以下都視為 true：
+
+  是
+  true
+  1
+  yes
+  y
+  ✓
+*/
+function toBoolean(value: string): boolean {
+  const normalized = clean(value).toLowerCase();
+
+  return [
+    '是',
+    'true',
+    '1',
+    'yes',
+    'y',
+    '✓',
+    'v',
+  ].includes(normalized);
+}
+
 async function fetchCSV(
   url: string
 ): Promise<string[][]> {
@@ -263,16 +289,6 @@ async function getItineraryMap(): Promise<
         'mapUrl'
       );
 
-      /*
-        如果未來 Itinerary 新增「文件ID」欄，
-        可填：
-
-        DOC001,DOC002
-
-        或：
-
-        DOC001、DOC002
-      */
       const rawDocumentIds = getValue(
         row,
         '文件ID',
@@ -553,7 +569,6 @@ export async function getTravelDocuments(): Promise<
       rows
         .slice(1)
 
-        /* 只讀取發布資料 */
         .filter((row) => {
           const status = getValue(
             row,
@@ -578,10 +593,6 @@ export async function getTravelDocuments(): Promise<
               'category'
             );
 
-          /*
-            避免 Sheet 裡出現非型別允許值，
-            導致 TypeScript 問題。
-          */
           const allowedCategories:
             TravelDocument['category'][] =
             [
@@ -636,17 +647,9 @@ export async function getTravelDocuments(): Promise<
             description:
               description || undefined,
 
-            /*
-              這裡保留 Sheet 原本日期，
-              UI 如果要比對日期再 normalize。
-            */
             date:
               rawDate || undefined,
 
-            /*
-              url 在 TravelDocument 型別中
-              是必填，所以空白時給空字串。
-            */
             url,
 
             published: true,
@@ -655,9 +658,6 @@ export async function getTravelDocuments(): Promise<
           return document;
         })
 
-        /*
-          ID 與文件名稱至少要存在。
-        */
         .filter(
           (document) =>
             Boolean(document.id) &&
@@ -681,11 +681,135 @@ export async function getTravelDocuments(): Promise<
 
 /* =========================================================
    PACKING
-   下一階段再接 Google Sheet
 ========================================================= */
 
 export async function getPackingItems(): Promise<
   PackingItem[]
 > {
-  return [];
+  const url =
+    process.env.GOOGLE_SHEET_PACKING_CSV_URL;
+
+  if (!url) {
+    console.warn(
+      'GOOGLE_SHEET_PACKING_CSV_URL is missing'
+    );
+
+    return [];
+  }
+
+  try {
+    const rows = await fetchCSV(url);
+
+    const { getValue } =
+      createTable(rows);
+
+    const items: PackingItem[] = rows
+      .slice(1)
+
+      /* 只顯示狀態為「發布」的項目 */
+      .filter((row) => {
+        const status = getValue(
+          row,
+          '狀態',
+          'status'
+        );
+
+        return status === '發布';
+      })
+
+      .map((row) => {
+        const id = getValue(
+          row,
+          'ID',
+          'id'
+        );
+
+        const category = getValue(
+          row,
+          '分類',
+          'category'
+        );
+
+        const name = getValue(
+          row,
+          '項目',
+          '項目名稱',
+          'name'
+        );
+
+        const quantity = getValue(
+          row,
+          '建議數量',
+          '數量',
+          'quantity'
+        );
+
+        const description = getValue(
+          row,
+          '用途',
+          '說明',
+          'description'
+        );
+
+        const importantRaw = getValue(
+          row,
+          '重要',
+          'important'
+        );
+
+        const defaultCompletedRaw =
+          getValue(
+            row,
+            '預設完成',
+            'defaultCompleted'
+          );
+
+        const item: PackingItem = {
+          id,
+          category,
+          name,
+
+          quantity:
+            quantity || undefined,
+
+          description:
+            description || undefined,
+
+          important:
+            toBoolean(importantRaw),
+
+          defaultCompleted:
+            toBoolean(
+              defaultCompletedRaw
+            ),
+
+          published: true,
+        };
+
+        return item;
+      })
+
+      /*
+        避免 Sheet 裡空白列
+        被網站當成行李項目。
+      */
+      .filter(
+        (item) =>
+          Boolean(item.id) &&
+          Boolean(item.name)
+      );
+
+    console.log(
+      `Loaded ${items.length} published packing items`
+    );
+
+    return items;
+  } catch (error) {
+    console.error(
+      'Failed to load Packing CSV:',
+      error
+    );
+
+    return [];
+  }
 }
