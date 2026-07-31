@@ -118,6 +118,21 @@ function formatDate(date: string) {
   ).padStart(2, '0')}`;
 }
 
+function sameTravelDate(a?: string, b?: string) {
+  if (!a || !b) return false;
+
+  const parse = (value: string) => {
+    const parts = normalizeDate(value).split('/').map(Number);
+    if (parts.length === 3) return [parts[1], parts[2]];
+    if (parts.length === 2) return [parts[0], parts[1]];
+    return [0, 0];
+  };
+
+  const [am, ad] = parse(a);
+  const [bm, bd] = parse(b);
+  return am === bm && ad === bd;
+}
+
 function getWeekday(date: string) {
   const [year, month, day] = normalizeDate(date)
     .split('/')
@@ -638,6 +653,16 @@ function DayDetail({
 }) {
   const level = safeLevel(day.level);
 
+  const itineraryDocumentIds = new Set(
+    day.itinerary.flatMap((item) => item.documentIds || [])
+  );
+
+  const dayDocuments = documents.filter(
+    (document) =>
+      sameTravelDate(document.date, day.date) &&
+      !itineraryDocumentIds.has(document.id)
+  );
+
   return (
     <div className="todayPage">
       <section className="todayHero">
@@ -713,6 +738,51 @@ function DayDetail({
           </div>
         )}
       </figure>
+
+      {dayDocuments.length > 0 && (
+        <section className="relatedDocumentsSection">
+          <div className="relatedDocumentsHeader">
+            <div>
+              <p className="eyebrow">RELATED DOCUMENTS</p>
+              <h2>當日相關檔案</h2>
+            </div>
+            <span>{dayDocuments.length} 份</span>
+          </div>
+
+          <div className="relatedDocumentTags">
+            {dayDocuments.map((document) =>
+              document.url ? (
+                <a
+                  key={document.id}
+                  className="relatedDocumentTag"
+                  href={document.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <FileIcon />
+                  <span>
+                    <small>{document.category}</small>
+                    <strong>{document.name}</strong>
+                  </span>
+                  <ArrowIcon />
+                </a>
+              ) : (
+                <div
+                  key={document.id}
+                  className="relatedDocumentTag disabled"
+                >
+                  <FileIcon />
+                  <span>
+                    <small>{document.category}</small>
+                    <strong>{document.name}</strong>
+                  </span>
+                  <em>尚未上傳</em>
+                </div>
+              )
+            )}
+          </div>
+        </section>
+      )}
 
       <section className="routeSection">
         <p className="eyebrow">
