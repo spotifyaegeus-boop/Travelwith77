@@ -11,10 +11,8 @@
   --muted: #697069;
   --pine: #30463a;
   --pine-dark: #24362e;
-  --sage: #aeb9ad;
-  --blue: #aebcc5;
   --burgundy: #76565a;
-  --white: #fff;
+  --white: #ffffff;
 }
 
 html {
@@ -36,13 +34,13 @@ input {
   font: inherit;
 }
 
+button {
+  color: inherit;
+}
+
 button,
 a {
   -webkit-tap-highlight-color: transparent;
-}
-
-button {
-  color: inherit;
 }
 
 .appShell {
@@ -50,26 +48,27 @@ button {
   max-width: 1280px;
   min-height: 100vh;
   margin: auto;
+  padding-bottom: 105px;
   background: var(--paper);
-  padding-bottom: 110px;
 }
 
 .topBar {
-  height: 76px;
-  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 72px;
+  padding: 0 clamp(18px, 5vw, 54px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
   background: rgba(251, 249, 244, 0.96);
-  position: sticky;
-  top: 0;
-  z-index: 30;
+  backdrop-filter: blur(12px);
 }
 
 .brand {
-  border: 0;
   padding: 0;
+  border: 0;
   background: transparent;
   text-align: left;
   cursor: pointer;
@@ -90,198 +89,274 @@ button {
 }
 
 .page {
-  min-height: calc(100vh - 76px);
+  min-height: calc(100vh - 72px);
 }
 
 .eyebrow {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   color: var(--muted);
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: 0.15em;
 }
 
-.dayHero {
-  padding: clamp(42px, 7vw, 86px) clamp(20px, 6vw, 72px);
+/* TODAY HERO */
+
+.todayHero {
+  padding: clamp(34px, 5vw, 58px)
+    clamp(20px, 6vw, 72px)
+    32px;
   background: var(--pine);
   color: #f9f6ee;
 }
 
-.dayHero .eyebrow {
-  color: #c9d1ca;
+.todayHeroTop {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 32px;
+  align-items: end;
 }
 
-.dayHero h1 {
-  max-width: 850px;
+.todayHero .eyebrow {
+  color: #c8d0ca;
+}
+
+.todayHero h1 {
+  max-width: 760px;
   margin: 0;
   font-family: Georgia, "Noto Serif TC", serif;
-  font-size: clamp(42px, 7vw, 82px);
+  font-size: clamp(38px, 5.6vw, 68px);
   font-weight: 500;
   line-height: 1.08;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.035em;
 }
 
-.chapterName {
-  margin: 16px 0 38px;
-  color: #d8ddd8;
-  font-size: 17px;
+.todayChapter {
+  margin: 12px 0 0;
+  color: #d4dbd5;
+  font-size: 16px;
 }
 
-.weatherSummary {
-  display: grid;
-  grid-template-columns: 1.35fr 1fr;
-  max-width: 760px;
-  border-top: 1px solid rgba(255,255,255,.25);
-  border-bottom: 1px solid rgba(255,255,255,.25);
+.todayLevel {
+  min-width: 190px;
+  padding: 14px 0 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
 }
 
-.weatherSummary > div {
-  padding: 24px 24px 24px 0;
-}
-
-.weatherSummary > div + div {
-  padding-left: 24px;
-  border-left: 1px solid rgba(255,255,255,.25);
-}
-
-.weatherSummary span,
-.levelSummary span {
+.todayLevel span,
+.todayLevel strong {
   display: block;
-  margin-bottom: 6px;
-  color: #cbd3cd;
-  font-size: 13px;
 }
 
-.weatherSummary strong {
+.todayLevel span {
+  margin-bottom: 5px;
+  color: #c8d0ca;
+  font-size: 12px;
+}
+
+.todayLevel strong {
+  font-size: 16px;
+}
+
+.todayWeather {
+  max-width: 760px;
+  margin-top: 28px;
+  padding-top: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  gap: 22px;
+  align-items: end;
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.todayWeather span {
+  display: block;
+  margin-bottom: 3px;
+  color: #c8d0ca;
+  font-size: 12px;
+}
+
+.todayWeather strong {
   display: block;
   font-family: Georgia, serif;
-  font-size: clamp(40px, 7vw, 72px);
+  font-size: clamp(32px, 5vw, 52px);
   font-weight: 500;
-  line-height: 1.05;
+  line-height: 1;
 }
 
-.levelSummary {
-  max-width: 760px;
-  margin-top: 26px;
-  display: flex;
-  align-items: center;
-  gap: 30px;
-}
-
-.levelSummary strong {
-  color: #f0ddd8;
-  font-size: 22px;
-  letter-spacing: .06em;
-}
-
-.levelSummary p {
+.todayWeather p {
   margin: 0;
-  font-size: 18px;
+  color: #e1e5e1;
+  font-size: 16px;
 }
 
-.contentSection {
-  padding: clamp(42px, 6vw, 76px) clamp(20px, 6vw, 72px);
+/* DAILY FEATURE IMAGE */
+
+.dailyFeature {
+  background: var(--paper);
+}
+
+.dailyFeatureImage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  overflow: hidden;
+  background: var(--stone);
+}
+
+.dailyFeatureImage img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.dailyFeatureImage::after {
+  content: "";
+  position: absolute;
+  inset: 40% 0 0;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(19, 27, 23, 0.72)
+  );
+  pointer-events: none;
+}
+
+.dailyFeatureLabel {
+  position: absolute;
+  left: clamp(20px, 6vw, 72px);
+  right: clamp(20px, 6vw, 72px);
+  bottom: 28px;
+  z-index: 2;
+  color: var(--white);
+}
+
+.dailyFeatureLabel small,
+.dailyFeatureLabel strong,
+.dailyFeatureLabel span {
+  display: block;
+}
+
+.dailyFeatureLabel small {
+  margin-bottom: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  opacity: 0.82;
+}
+
+.dailyFeatureLabel strong {
+  font-family: Georgia, "Noto Serif TC", serif;
+  font-size: clamp(26px, 4vw, 42px);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.dailyFeatureLabel span {
+  margin-top: 5px;
+  font-size: 13px;
+  opacity: 0.86;
+}
+
+/* COMMON SECTIONS */
+
+.contentSection,
+.todayOutfit,
+.todayItinerary {
+  padding: clamp(38px, 5vw, 62px)
+    clamp(20px, 6vw, 72px);
 }
 
 .sectionHeading {
-  margin-bottom: 28px;
+  margin-bottom: 22px;
 }
 
 .sectionHeading h2,
 .chapterHeader h2 {
   margin: 0;
   font-family: Georgia, "Noto Serif TC", serif;
-  font-size: clamp(34px, 5vw, 54px);
+  font-size: clamp(32px, 4vw, 46px);
   font-weight: 500;
   line-height: 1.15;
 }
 
-.quickOutfit {
+/* TODAY OUTFIT */
+
+.todayOutfit {
+  border-bottom: 1px solid var(--line);
+}
+
+.outfitQuickList {
+  border-top: 1px solid var(--line);
+}
+
+.outfitQuickList > div {
+  padding: 17px 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  grid-template-columns: 90px 1fr;
+  gap: 20px;
+  border-bottom: 1px solid var(--line);
 }
 
-.quickOutfit > div {
-  padding: 24px;
-  background: var(--ivory);
-  border: 1px solid var(--line);
-}
-
-.quickOutfit span,
-.carryCard span,
-.importantNotice span,
-.outfitDetails span,
-.lookCard > div > span {
+.outfitQuickList span {
   color: var(--muted);
   font-size: 13px;
   font-weight: 700;
 }
 
-.quickOutfit p {
-  margin: 10px 0 0;
-  font-size: 18px;
-  line-height: 1.75;
+.outfitQuickList p {
+  margin: 0;
+  font-size: 17px;
 }
 
-.carryCard {
-  margin-top: 14px;
-  padding: 24px;
-  background: #e7ece8;
-  border-left: 5px solid var(--pine);
+.outfitQuickList .outfitOuter {
+  color: var(--pine);
 }
 
-.carryCard strong {
-  display: block;
-  margin-top: 6px;
-  font-size: 24px;
+.outfitQuickList .outfitOuter p {
+  font-weight: 700;
 }
 
-.carryCard p {
-  margin: 6px 0 0;
-}
-
-.primaryButton {
+.outfitLink {
   width: 100%;
-  min-height: 58px;
+  min-height: 64px;
   margin-top: 18px;
-  padding: 15px 20px;
+  padding: 12px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border: 0;
-  border-radius: 3px;
   background: var(--pine);
-  color: white;
-  font-weight: 700;
+  color: var(--white);
+  text-align: left;
   cursor: pointer;
 }
 
-.importantNotice {
-  margin-top: 18px;
-  padding: 20px 22px;
-  border: 1px solid #d6c7c4;
-  background: #f3eae7;
+.outfitLink small {
+  display: block;
+  margin-bottom: 2px;
+  color: #cbd3cd;
+  font-size: 10px;
+  letter-spacing: 0.13em;
 }
 
-.importantNotice p {
-  margin: 5px 0 0;
+.outfitLink b {
+  font-size: 22px;
 }
 
-.itinerarySection {
-  padding-top: 20px;
-}
+/* TIMELINE */
 
-.timeline {
+.timeline,
+.dayList {
   border-top: 1px solid var(--line);
 }
 
 .stop {
+  padding: 26px 0;
   display: grid;
   grid-template-columns: 90px 1fr;
   gap: 24px;
-  padding: 26px 0;
   border-bottom: 1px solid var(--line);
 }
 
@@ -337,8 +412,45 @@ button {
   border: 1px solid var(--line);
 }
 
+/* TODAY NOTICE */
+
+.todayNotice {
+  margin: 0 clamp(20px, 6vw, 72px) 50px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 14px;
+  background: #f2e9e5;
+  border: 1px solid #dacac5;
+}
+
+.todayNotice > div > span {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--burgundy);
+  color: var(--white);
+  font-weight: 800;
+}
+
+.todayNotice small {
+  color: var(--burgundy);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.todayNotice p {
+  margin: 3px 0 0;
+}
+
+/* PAGE INTRO */
+
 .pageIntro {
-  padding: clamp(48px, 8vw, 96px) clamp(20px, 6vw, 72px) 48px;
+  padding: clamp(48px, 8vw, 96px)
+    clamp(20px, 6vw, 72px)
+    48px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -358,6 +470,8 @@ button {
   font-size: 18px;
 }
 
+/* OVERVIEW */
+
 .chapterSection {
   padding: 46px clamp(20px, 6vw, 72px);
 }
@@ -373,11 +487,7 @@ button {
 .chapterHeader > span {
   color: var(--muted);
   font-size: 13px;
-  letter-spacing: .08em;
-}
-
-.dayList {
-  border-top: 1px solid var(--line);
+  letter-spacing: 0.06em;
 }
 
 .dayCard {
@@ -422,11 +532,14 @@ button {
 .dayCardContent p {
   margin: 5px 0 0;
   color: var(--muted);
+  font-size: 14px;
 }
 
 .arrow {
   font-size: 24px;
 }
+
+/* FILTERS */
 
 .filterTabs,
 .dateScroller {
@@ -457,8 +570,10 @@ button {
 .filterTabs button.active {
   background: var(--pine);
   border-color: var(--pine);
-  color: white;
+  color: var(--white);
 }
+
+/* DOCUMENTS */
 
 .documentList {
   display: grid;
@@ -502,6 +617,8 @@ button {
   font-size: 14px;
 }
 
+/* OUTFIT PAGE */
+
 .outfitIntro {
   padding-bottom: 30px;
 }
@@ -533,7 +650,7 @@ button {
 .dateScroller button.active {
   background: var(--pine);
   border-color: var(--pine);
-  color: white;
+  color: var(--white);
 }
 
 .dateScroller button.active span {
@@ -583,7 +700,7 @@ button {
   align-items: center;
   gap: 24px;
   background: var(--pine);
-  color: white;
+  color: var(--white);
 }
 
 .levelBanner span,
@@ -597,9 +714,7 @@ button {
 }
 
 .levelBanner b {
-  color: #e5c9c6;
-  font-size: 20px;
-  letter-spacing: .05em;
+  font-size: 18px;
 }
 
 .levelBanner p {
@@ -644,11 +759,17 @@ button {
   margin-bottom: 8px;
   font-family: Georgia, serif;
   font-size: 12px;
-  letter-spacing: .2em;
+  letter-spacing: 0.2em;
 }
 
 .lookCard > div:last-child {
   padding: 22px;
+}
+
+.lookCard > div > span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .lookCard h3 {
@@ -675,21 +796,46 @@ button {
   border-left: 1px solid var(--line);
 }
 
+.outfitDetails span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .outfitDetails strong {
   display: block;
   margin-top: 5px;
   font-size: 18px;
 }
 
+.importantNotice {
+  margin-top: 18px;
+  padding: 20px 22px;
+  border: 1px solid #d6c7c4;
+  background: #f3eae7;
+}
+
+.importantNotice span {
+  color: var(--burgundy);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.importantNotice p {
+  margin: 5px 0 0;
+}
+
+/* PACKING */
+
 .packingProgress {
   max-width: 620px;
   margin-top: 34px;
   padding: 22px;
-  background: var(--pine);
-  color: white;
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 16px;
+  background: var(--pine);
+  color: var(--white);
 }
 
 .packingProgress strong,
@@ -715,13 +861,13 @@ button {
   grid-column: 1 / -1;
   height: 6px;
   overflow: hidden;
-  background: rgba(255,255,255,.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .progressTrack span {
   height: 100%;
-  background: white;
-  transition: width .25s ease;
+  background: var(--white);
+  transition: width 0.25s ease;
 }
 
 .packingSections {
@@ -770,7 +916,7 @@ button {
 .checkItem.checked .customCheck {
   background: var(--pine);
   border-color: var(--pine);
-  color: white;
+  color: var(--white);
 }
 
 .checkItem.checked > strong {
@@ -786,28 +932,30 @@ button {
   font-weight: 700;
 }
 
+/* BOTTOM NAV */
+
 .bottomNav {
   position: fixed;
   left: 50%;
-  bottom: 14px;
+  bottom: 10px;
   z-index: 50;
-  width: min(620px, calc(100% - 24px));
-  padding: 7px;
+  width: min(620px, calc(100% - 20px));
+  padding: 5px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   transform: translateX(-50%);
-  border: 1px solid rgba(255,255,255,.14);
-  border-radius: 20px;
-  background: rgba(31, 42, 36, .96);
-  box-shadow: 0 12px 40px rgba(24, 29, 26, .22);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(31, 42, 36, 0.96);
+  box-shadow: 0 12px 40px rgba(24, 29, 26, 0.22);
   backdrop-filter: blur(16px);
 }
 
 .navButton {
-  min-height: 58px;
-  padding: 6px 2px;
+  min-height: 52px;
+  padding: 5px 2px;
   border: 0;
-  border-radius: 14px;
+  border-radius: 13px;
   background: transparent;
   color: #c9d0cb;
   cursor: pointer;
@@ -819,14 +967,9 @@ button {
 }
 
 .navButton span {
-  width: 26px;
-  height: 26px;
-  margin: 0 auto 2px;
-  display: grid;
-  place-items: center;
-  border: 1px solid #657069;
-  border-radius: 50%;
-  font-size: 11px;
+  margin-bottom: 1px;
+  color: #9eaaa2;
+  font-size: 10px;
 }
 
 .navButton strong {
@@ -839,8 +982,10 @@ button {
 }
 
 .navButton.active span {
-  border-color: var(--pine);
+  color: var(--pine);
 }
+
+/* MOBILE */
 
 @media (max-width: 700px) {
   body {
@@ -848,51 +993,156 @@ button {
   }
 
   .appShell {
-    padding-bottom: 100px;
+    padding-bottom: 95px;
   }
 
   .topBar {
-    height: 68px;
+    height: 66px;
     padding: 0 18px;
+  }
+
+  .brand strong {
+    font-size: 16px;
   }
 
   .tripDates {
     font-size: 10px;
   }
 
-  .dayHero {
-    padding-top: 40px;
+  .todayHero {
+    padding: 29px 20px 25px;
   }
 
-  .dayHero h1 {
-    font-size: 44px;
-  }
-
-  .weatherSummary {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .weatherSummary > div {
-    padding: 20px 14px 20px 0;
-  }
-
-  .weatherSummary > div + div {
-    padding-left: 14px;
-  }
-
-  .weatherSummary strong {
-    font-size: 40px;
-  }
-
-  .levelSummary {
+  .todayHeroTop {
     display: block;
   }
 
-  .levelSummary p {
-    margin-top: 10px;
+  .todayHero h1 {
+    max-width: 350px;
+    font-size: 38px;
+    line-height: 1.1;
   }
 
-  .quickOutfit,
+  .todayChapter {
+    margin-top: 8px;
+    font-size: 15px;
+  }
+
+  .todayLevel {
+    min-width: 0;
+    margin-top: 20px;
+    padding-top: 13px;
+  }
+
+  .todayLevel span,
+  .todayLevel strong {
+    display: inline;
+  }
+
+  .todayLevel span {
+    margin-right: 10px;
+  }
+
+  .todayWeather {
+    margin-top: 17px;
+    padding-top: 17px;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .todayWeather strong {
+    font-size: 34px;
+  }
+
+  .todayWeather p {
+    grid-column: 1 / -1;
+    padding-top: 11px;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: 15px;
+  }
+
+  .dailyFeatureImage {
+    aspect-ratio: 3 / 2;
+  }
+
+  .dailyFeatureLabel {
+    left: 20px;
+    right: 20px;
+    bottom: 18px;
+  }
+
+  .dailyFeatureLabel strong {
+    font-size: 27px;
+  }
+
+  .todayOutfit,
+  .todayItinerary,
+  .contentSection {
+    padding: 34px 20px;
+  }
+
+  .sectionHeading h2 {
+    font-size: 32px;
+  }
+
+  .outfitQuickList > div {
+    grid-template-columns: 66px 1fr;
+    gap: 12px;
+    padding: 14px 0;
+  }
+
+  .outfitQuickList p {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .stop {
+    grid-template-columns: 58px 1fr;
+    gap: 12px;
+    padding: 22px 0;
+  }
+
+  .stop time {
+    font-size: 17px;
+  }
+
+  .stopContent h3 {
+    font-size: 20px;
+  }
+
+  .todayNotice {
+    margin: 0 20px 40px;
+  }
+
+  .pageIntro {
+    padding: 44px 20px 34px;
+  }
+
+  .pageIntro h1 {
+    font-size: 48px;
+  }
+
+  .pageIntro > p:last-child {
+    font-size: 16px;
+  }
+
+  .chapterSection {
+    padding: 34px 20px;
+  }
+
+  .dayCard {
+    grid-template-columns: 70px 1fr 22px;
+    gap: 12px;
+  }
+
+  .dayDate strong {
+    font-size: 20px;
+  }
+
+  .dayCardContent h3 {
+    font-size: 17px;
+  }
+
   .documentList,
   .lookGrid,
   .outfitDetails {
@@ -904,30 +1154,10 @@ button {
     border-top: 1px solid var(--line);
   }
 
-  .stop {
-    grid-template-columns: 64px 1fr;
-    gap: 14px;
-  }
-
-  .stop time {
-    font-size: 17px;
-  }
-
-  .dayCard {
-    grid-template-columns: 72px 1fr 24px;
-    gap: 12px;
-  }
-
-  .dayCardContent h3 {
-    font-size: 17px;
-  }
-
-  .dayCardContent p {
-    font-size: 14px;
-  }
-
   .outfitHero {
+    padding: 32px 20px;
     grid-template-columns: 1fr;
+    gap: 22px;
   }
 
   .outfitTemperature {
@@ -943,12 +1173,11 @@ button {
   }
 
   .bottomNav {
-    bottom: 10px;
-    width: calc(100% - 20px);
+    bottom: 8px;
   }
 
   .navButton {
-    min-height: 56px;
+    min-height: 50px;
   }
 
   .navButton strong {
