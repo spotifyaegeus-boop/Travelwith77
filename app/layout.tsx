@@ -1,1 +1,1 @@
-import './style.css'; export const metadata={title:'CANADA 2026',description:'17 天 · 4 種氣候篇章 · 一套衣櫥'}; export default function Layout({children}:{children:React.ReactNode}){return <html lang="zh-Hant"><body>{children}</body></html>}
+import './style.css';export const metadata={title:'CANADA 2026',description:'17 天 · 4 種氣候篇章 · 一套衣櫥'};export default function Layout({children}:{children:React.ReactNode}){return <html lang="zh-Hant"><body>{children}</body></html>}

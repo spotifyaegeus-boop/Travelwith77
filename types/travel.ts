@@ -1,0 +1,2 @@
+export type TravelDay={date:string;chapter:string;title:string;dayTemp:string;nightTemp:string;level:number;weather:string;maleOutfit:string;femaleOutfit:string;shoes:string;outerLayer:string;notice:string;heroImage:string;maleImage:string;femaleImage:string;published:boolean;itinerary:ItineraryItem[]}
+export type ItineraryItem={time:string;place:string;description:string;type:string;priority:string;mapUrl?:string}
