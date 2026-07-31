@@ -817,7 +817,7 @@ h2 {
 }
 
 /* =========================================================
-   BOTTOM NAV — 4 ITEMS
+   BOTTOM NAV �� 4 ITEMS
 ========================================================= */
 
 .bottomNav {
@@ -1259,4 +1259,213 @@ h2 {
   line-height: 1.6;
   font-weight: 500;
 }
+}
+
+/* =========================================================
+   DOCUMENTS �� COMPLETE UI
+========================================================= */
+
+.documentGroups {
+  display: grid;
+  gap: 52px;
+}
+
+.documentGroup h3 {
+  margin: 0 0 18px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.documentList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.documentCard {
+  min-height: 220px;
+  padding: 24px;
+  border: 1px solid #d1ccc1;
+  border-radius: 16px;
+  background: #faf8f2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.documentCard > div > span {
+  display: inline-flex;
+  margin-bottom: 14px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #e7ece7;
+  color: #526158;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+.documentCard strong {
+  display: block;
+  font-size: 22px;
+  line-height: 1.4;
+  font-weight: 800;
+}
+
+.documentCard p {
+  margin: 10px 0 0;
+  color: #646b65;
+  line-height: 1.7;
+}
+
+.documentCard > a {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #304f40;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.fileUnavailable {
+  width: fit-content;
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: #ebe8e0;
+  color: #888b85;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.relatedDocumentsSection {
+  padding: clamp(42px, 6vw, 68px) clamp(24px, 5vw, 60px);
+  background: #faf8f2;
+  border-bottom: 1px solid #d6d1c7;
+}
+
+.relatedDocumentsHeader {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.relatedDocumentsHeader h2 {
+  margin-bottom: 0;
+}
+
+.relatedDocumentsHeader > span {
+  color: #737a73;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.relatedDocumentTags {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.relatedDocumentTag {
+  min-width: 0;
+  min-height: 82px;
+  padding: 15px 16px;
+  border: 1px solid #d0cbc0;
+  border-radius: 12px;
+  background: #f4f1e9;
+  color: #304f40;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  text-decoration: none;
+}
+
+.relatedDocumentTag > span {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.relatedDocumentTag small {
+  color: #727a73;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.relatedDocumentTag strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.relatedDocumentTag.disabled {
+  color: #858a84;
+  background: #eeece5;
+}
+
+.relatedDocumentTag em {
+  color: #8a8d87;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.heroPlaceholder {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  padding: clamp(24px, 5vw, 60px);
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  background: #d9d5cc;
+  color: #566159;
+}
+
+.heroPlaceholder div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.heroPlaceholder span {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .15em;
+}
+
+.heroPlaceholder strong {
+  font-size: clamp(22px, 4vw, 34px);
+  font-weight: 800;
+}
+
+.heroPlaceholder p {
+  margin: 0;
+  font-weight: 500;
+}
+
+@media (max-width: 700px) {
+  .documentList,
+  .relatedDocumentTags {
+    grid-template-columns: 1fr;
+  }
+
+  .documentCard {
+    min-height: 0;
+    padding: 20px;
+  }
+
+  .relatedDocumentsHeader {
+    align-items: flex-start;
+  }
 }
