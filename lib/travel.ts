@@ -82,13 +82,16 @@ function createTable(rows: string[][]) {
 }
 
 /*
-  Days:
+  支援：
+
+  2026/08/13
   2026/8/13
-
-  Itinerary:
+  2026-08-13
   8/13
+  08/13
 
-  兩邊都轉成：
+  統一轉成：
+
   8/13
 */
 function normalizeDate(value: string): string {
@@ -134,7 +137,9 @@ function normalizeDate(value: string): string {
   return normalized;
 }
 
-async function fetchCSV(url: string): Promise<string[][]> {
+async function fetchCSV(
+  url: string
+): Promise<string[][]> {
   const response = await fetch(url, {
     next: {
       revalidate: 60,
@@ -152,7 +157,9 @@ async function fetchCSV(url: string): Promise<string[][]> {
   const rows = parseCSV(text);
 
   if (!rows || rows.length < 2) {
-    throw new Error('Google Sheet CSV has no data');
+    throw new Error(
+      'Google Sheet CSV has no data'
+    );
   }
 
   return rows;
@@ -168,7 +175,8 @@ async function getItineraryMap(): Promise<
   const url =
     process.env.GOOGLE_SHEET_ITINERARY_CSV_URL;
 
-  const map = new Map<string, ItineraryItem[]>();
+  const map =
+    new Map<string, ItineraryItem[]>();
 
   if (!url) {
     console.warn(
@@ -181,7 +189,8 @@ async function getItineraryMap(): Promise<
   try {
     const rows = await fetchCSV(url);
 
-    const { getValue } = createTable(rows);
+    const { getValue } =
+      createTable(rows);
 
     for (const row of rows.slice(1)) {
       const status = getValue(
@@ -200,7 +209,8 @@ async function getItineraryMap(): Promise<
         'date'
       );
 
-      const dateKey = normalizeDate(rawDate);
+      const dateKey =
+        normalizeDate(rawDate);
 
       if (!dateKey) {
         continue;
@@ -253,10 +263,36 @@ async function getItineraryMap(): Promise<
         'mapUrl'
       );
 
+      /*
+        如果未來 Itinerary 新增「文件ID」欄，
+        可填：
+
+        DOC001,DOC002
+
+        或：
+
+        DOC001、DOC002
+      */
+      const rawDocumentIds = getValue(
+        row,
+        '文件ID',
+        '文件 ID',
+        'documentIds'
+      );
+
+      const documentIds =
+        rawDocumentIds
+          ? rawDocumentIds
+              .split(/[,，、]/)
+              .map((id) => id.trim())
+              .filter(Boolean)
+          : undefined;
+
       let time = startTime;
 
       if (startTime && endTime) {
-        time = `${startTime}–${endTime}`;
+        time =
+          `${startTime}–${endTime}`;
       }
 
       const item: ItineraryItem = {
@@ -265,7 +301,14 @@ async function getItineraryMap(): Promise<
         description,
         type,
         priority,
-        mapUrl: mapUrl || undefined,
+
+        mapUrl:
+          mapUrl || undefined,
+
+        documentIds:
+          documentIds?.length
+            ? documentIds
+            : undefined,
       };
 
       if (!map.has(dateKey)) {
@@ -294,7 +337,9 @@ async function getItineraryMap(): Promise<
    DAYS
 ========================================================= */
 
-export async function getTravelData(): Promise<TravelDay[]> {
+export async function getTravelData(): Promise<
+  TravelDay[]
+> {
   const daysUrl =
     process.env.GOOGLE_SHEET_CSV_URL;
 
@@ -307,16 +352,14 @@ export async function getTravelData(): Promise<TravelDay[]> {
   }
 
   try {
-    /*
-      Days 與 Itinerary 同時取得。
-    */
     const [rows, itineraryMap] =
       await Promise.all([
         fetchCSV(daysUrl),
         getItineraryMap(),
       ]);
 
-    const { getValue } = createTable(rows);
+    const { getValue } =
+      createTable(rows);
 
     const days: TravelDay[] = rows
       .slice(1)
@@ -354,7 +397,8 @@ export async function getTravelData(): Promise<TravelDay[]> {
           'date'
         );
 
-        const dateKey = normalizeDate(date);
+        const dateKey =
+          normalizeDate(date);
 
         return {
           date,
@@ -448,16 +492,15 @@ export async function getTravelData(): Promise<TravelDay[]> {
 
           published: true,
 
-          /*
-            這裡正式把 Itinerary
-            塞進對應的 TravelDay
-          */
           itinerary:
-            itineraryMap.get(dateKey) ?? [],
+            itineraryMap.get(dateKey) ??
+            [],
         };
       })
 
-      .filter((day) => Boolean(day.date));
+      .filter((day) =>
+        Boolean(day.date)
+      );
 
     console.log(
       `Loaded ${days.length} published travel days`
@@ -484,18 +527,161 @@ export async function getTravelData(): Promise<TravelDay[]> {
 
 /* =========================================================
    DOCUMENTS
-   下一階段再接 Google Sheet。
 ========================================================= */
 
 export async function getTravelDocuments(): Promise<
   TravelDocument[]
 > {
-  return [];
+  const url =
+    process.env.GOOGLE_SHEET_DOCUMENTS_CSV_URL;
+
+  if (!url) {
+    console.warn(
+      'GOOGLE_SHEET_DOCUMENTS_CSV_URL is missing'
+    );
+
+    return [];
+  }
+
+  try {
+    const rows = await fetchCSV(url);
+
+    const { getValue } =
+      createTable(rows);
+
+    const documents: TravelDocument[] =
+      rows
+        .slice(1)
+
+        /* 只讀取發布資料 */
+        .filter((row) => {
+          const status = getValue(
+            row,
+            '狀態',
+            'status'
+          );
+
+          return status === '發布';
+        })
+
+        .map((row) => {
+          const id = getValue(
+            row,
+            'ID',
+            'id'
+          );
+
+          const rawCategory =
+            getValue(
+              row,
+              '分類',
+              'category'
+            );
+
+          /*
+            避免 Sheet 裡出現非型別允許值，
+            導致 TypeScript 問題。
+          */
+          const allowedCategories:
+            TravelDocument['category'][] =
+            [
+              '航班',
+              '住宿',
+              '租車',
+              '景點',
+              '保險',
+              '其他',
+            ];
+
+          const category:
+            TravelDocument['category'] =
+            allowedCategories.includes(
+              rawCategory as TravelDocument['category']
+            )
+              ? (rawCategory as TravelDocument['category'])
+              : '其他';
+
+          const name = getValue(
+            row,
+            '文件名稱',
+            'name'
+          );
+
+          const description =
+            getValue(
+              row,
+              '說明',
+              'description'
+            );
+
+          const rawDate = getValue(
+            row,
+            '日期',
+            'date'
+          );
+
+          const url = getValue(
+            row,
+            '檔案連結',
+            '文件連結',
+            'url'
+          );
+
+          const document:
+            TravelDocument = {
+            id,
+            category,
+            name,
+
+            description:
+              description || undefined,
+
+            /*
+              這裡保留 Sheet 原本日期，
+              UI 如果要比對日期再 normalize。
+            */
+            date:
+              rawDate || undefined,
+
+            /*
+              url 在 TravelDocument 型別中
+              是必填，所以空白時給空字串。
+            */
+            url,
+
+            published: true,
+          };
+
+          return document;
+        })
+
+        /*
+          ID 與文件名稱至少要存在。
+        */
+        .filter(
+          (document) =>
+            Boolean(document.id) &&
+            Boolean(document.name)
+        );
+
+    console.log(
+      `Loaded ${documents.length} published documents`
+    );
+
+    return documents;
+  } catch (error) {
+    console.error(
+      'Failed to load Documents CSV:',
+      error
+    );
+
+    return [];
+  }
 }
 
 /* =========================================================
    PACKING
-   下一階段再接 Google Sheet。
+   下一階段再接 Google Sheet
 ========================================================= */
 
 export async function getPackingItems(): Promise<
