@@ -817,7 +817,7 @@ h2 {
 }
 
 /* =========================================================
-   BOTTOM NAV �� 4 ITEMS
+   BOTTOM NAV — 4 ITEMS
 ========================================================= */
 
 .bottomNav {
@@ -1262,7 +1262,7 @@ h2 {
 }
 
 /* =========================================================
-   DOCUMENTS �� COMPLETE UI
+   DOCUMENTS — COMPLETE UI
 ========================================================= */
 
 .documentGroups {
@@ -1467,5 +1467,65 @@ h2 {
 
   .relatedDocumentsHeader {
     align-items: flex-start;
+  }
+}
+
+/* PACKING — PROGRESS / RESET */
+
+.packingProgress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.packingProgressActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+}
+
+.packingResetButton {
+  appearance: none;
+  min-height: 36px;
+  padding: 7px 12px;
+  border: 1px solid #b9b8ae;
+  border-radius: 9px;
+  background: transparent;
+  color: #304f40;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background .16s ease,
+    border-color .16s ease;
+}
+
+.packingResetButton:hover {
+  background: rgba(48, 79, 64, .06);
+  border-color: #8f978f;
+}
+
+.packingResetButton:focus-visible {
+  outline: 2px solid #304f40;
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .packingProgress {
+    gap: 12px;
+  }
+
+  .packingProgressActions {
+    gap: 9px;
+  }
+
+  .packingResetButton {
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 12px;
   }
 }
