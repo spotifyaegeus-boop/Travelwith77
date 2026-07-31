@@ -5,7 +5,10 @@ import type { TravelDay } from '../types/travel';
 
 type Page = 'today' | 'overview' | 'documents' | 'outfits' | 'packing';
 
-const stars = (n: number) => '★'.repeat(n) + '☆'.repeat(5 - n);
+const levelLabel = (level: number) => {
+  const labels = ['輕薄', '薄外層', '保暖分層', '羽絨保暖', '高山防寒'];
+  return labels[Math.min(Math.max(level, 1), 5) - 1];
+};
 
 const packingItems = [
   { id: 'passport', category: '證件', name: '護照', important: true },
@@ -62,6 +65,7 @@ const documents = [
 
 function normalizeDate(date: string) {
   const parts = date.match(/\d+/g);
+
   if (!parts || parts.length < 3) return date;
 
   return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
@@ -69,13 +73,17 @@ function normalizeDate(date: string) {
 
 function displayDate(date: string) {
   const parts = date.match(/\d+/g);
+
   if (!parts || parts.length < 3) return date;
+
   return `${Number(parts[1])} 月 ${Number(parts[2])} 日`;
 }
 
 function shortDate(date: string) {
   const parts = date.match(/\d+/g);
+
   if (!parts || parts.length < 3) return date;
+
   return `${Number(parts[1])}/${Number(parts[2])}`;
 }
 
@@ -110,7 +118,12 @@ function Photo({
   alt: string;
 }) {
   return src ? (
-    <img className="photo" src={src} alt={alt} loading="lazy" />
+    <img
+      className="photo"
+      src={src}
+      alt={alt}
+      loading="lazy"
+    />
   ) : (
     <div className="photoPlaceholder">
       <span>LOOKBOOK</span>
@@ -130,6 +143,7 @@ export default function TravelApp({
   );
 
   const [page, setPage] = useState<Page>('today');
+
   const [selectedDate, setSelectedDate] = useState(
     publishedDays[0]?.date || ''
   );
@@ -138,15 +152,21 @@ export default function TravelApp({
 
   useEffect(() => {
     const today = getCanadaToday();
+
     const match = publishedDays.find(
       (day) => normalizeDate(day.date) === today
     );
 
-    if (match) setSelectedDate(match.date);
+    if (match) {
+      setSelectedDate(match.date);
+    }
 
     try {
       const saved = localStorage.getItem('canada-2026-packing');
-      if (saved) setChecked(JSON.parse(saved));
+
+      if (saved) {
+        setChecked(JSON.parse(saved));
+      }
     } catch {}
   }, [publishedDays]);
 
@@ -162,13 +182,21 @@ export default function TravelApp({
   function openDay(date: string) {
     setSelectedDate(date);
     setPage('today');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
   }
 
   function openOutfit(date: string) {
     setSelectedDate(date);
     setPage('outfits');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
   }
 
   function togglePacking(id: string) {
@@ -190,7 +218,11 @@ export default function TravelApp({
   }
 
   if (!selectedDay) {
-    return <main className="appShell">目前沒有可顯示的行程資料。</main>;
+    return (
+      <main className="appShell">
+        目前沒有可顯示的行程資料。
+      </main>
+    );
   }
 
   return (
@@ -205,7 +237,9 @@ export default function TravelApp({
           <span>旅行手冊</span>
         </button>
 
-        <div className="tripDates">08.13 — 08.28</div>
+        <div className="tripDates">
+          08.13 — 08.28
+        </div>
       </header>
 
       {page === 'today' && (
@@ -223,7 +257,9 @@ export default function TravelApp({
         />
       )}
 
-      {page === 'documents' && <DocumentsPage />}
+      {page === 'documents' && (
+        <DocumentsPage />
+      )}
 
       {page === 'outfits' && (
         <OutfitsPage
@@ -240,7 +276,10 @@ export default function TravelApp({
         />
       )}
 
-      <nav className="bottomNav" aria-label="主要導覽">
+      <nav
+        className="bottomNav"
+        aria-label="主要導覽"
+      >
         <NavButton
           active={page === 'today'}
           label="今日"
@@ -293,7 +332,11 @@ function NavButton({
 }) {
   return (
     <button
-      className={active ? 'navButton active' : 'navButton'}
+      className={
+        active
+          ? 'navButton active'
+          : 'navButton'
+      }
       onClick={onClick}
     >
       <span>{icon}</span>
@@ -310,43 +353,79 @@ function TodayPage({
   onOutfit: () => void;
 }) {
   return (
-    <div className="page">
-      <section className="dayHero">
-        <p className="eyebrow">
-          {displayDate(day.date)} · {weekday(day.date)}
-        </p>
+    <div className="page todayPage">
 
-        <h1>{day.title}</h1>
-        <p className="chapterName">{day.chapter}</p>
-
-        <div className="weatherSummary">
+      <section className="todayHero">
+        <div className="todayHeroTop">
           <div>
-            <span>白天氣溫</span>
+            <p className="eyebrow">
+              {displayDate(day.date)} · {weekday(day.date)}
+            </p>
+
+            <h1>{day.title}</h1>
+
+            <p className="todayChapter">
+              {day.chapter}
+            </p>
+          </div>
+
+          <div className="todayLevel">
+            <span>今日穿著</span>
+
+            <strong>
+              LEVEL {day.level}｜{levelLabel(day.level)}
+            </strong>
+          </div>
+        </div>
+
+        <div className="todayWeather">
+          <div>
+            <span>白天</span>
             <strong>{day.dayTemp}</strong>
           </div>
 
           <div>
-            <span>早晚／環境</span>
+            <span>早晚</span>
             <strong>{day.nightTemp}</strong>
           </div>
-        </div>
 
-        <div className="levelSummary">
-          <div>
-            <span>今日厚度</span>
-            <strong>{stars(day.level)}</strong>
-          </div>
           <p>{day.weather}</p>
         </div>
       </section>
 
-      <section className="contentSection">
+      {day.heroImage && (
+        <section className="dailyFeature">
+          <div className="dailyFeatureImage">
+            <img
+              src={day.heroImage}
+              alt={`${day.title} 今日精選景色`}
+            />
+
+            <div className="dailyFeatureLabel">
+              <small>TODAY'S HIGHLIGHT</small>
+
+              <strong>
+                {day.title}
+              </strong>
+
+              <span>
+                {day.chapter}
+              </span>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section className="todayOutfit">
         <div className="sectionHeading">
-          <p className="eyebrow">今日穿搭</p>
-          <h2>今天怎麼穿？</h2>
+          <p className="eyebrow">
+            TODAY'S OUTFIT
+          </p>
+
+          <h2>今日穿搭</h2>
         </div>
 
-        <div className="quickOutfit">
+        <div className="outfitQuickList">
           <div>
             <span>男生</span>
             <p>{day.maleOutfit}</p>
@@ -356,62 +435,92 @@ function TodayPage({
             <span>女生</span>
             <p>{day.femaleOutfit}</p>
           </div>
-        </div>
 
-        <div className="carryCard">
-          <span>今天一定要帶</span>
-          <strong>{day.outerLayer}</strong>
-          <p>鞋款：{day.shoes}</p>
-        </div>
-
-        <button className="primaryButton" onClick={onOutfit}>
-          查看完整穿搭指南
-          <span>→</span>
-        </button>
-
-        {day.notice && (
-          <div className="importantNotice">
-            <span>今日提醒</span>
-            <p>{day.notice}</p>
+          <div>
+            <span>鞋款</span>
+            <p>{day.shoes}</p>
           </div>
-        )}
+
+          <div className="outfitOuter">
+            <span>記得帶</span>
+            <p>{day.outerLayer}</p>
+          </div>
+        </div>
+
+        <button
+          className="outfitLink"
+          onClick={onOutfit}
+        >
+          <span>
+            <small>LOOKBOOK</small>
+            查看完整穿搭指南
+          </span>
+
+          <b>→</b>
+        </button>
       </section>
 
-      <section className="contentSection itinerarySection">
+      <section className="todayItinerary">
         <div className="sectionHeading">
-          <p className="eyebrow">TODAY</p>
+          <p className="eyebrow">
+            TODAY'S PLAN
+          </p>
+
           <h2>今日行程</h2>
         </div>
 
         {day.itinerary.length ? (
           <div className="timeline">
-            {day.itinerary.map((item, index) => (
-              <article className="stop" key={`${item.place}-${index}`}>
-                <time>{item.time || '—'}</time>
+            {day.itinerary.map(
+              (item, index) => (
+                <article
+                  className="stop"
+                  key={`${item.place}-${index}`}
+                >
+                  <time>
+                    {item.time || '—'}
+                  </time>
 
-                <div className="stopContent">
-                  <div className="stopMeta">
-                    <span>{item.type}</span>
-                    {item.priority && <span>{item.priority}</span>}
+                  <div className="stopContent">
+                    <div className="stopMeta">
+                      {item.type && (
+                        <span>
+                          {item.type}
+                        </span>
+                      )}
+
+                      {item.priority && (
+                        <span>
+                          {item.priority}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3>
+                      {item.place}
+                    </h3>
+
+                    {item.description && (
+                      <p>
+                        {item.description}
+                      </p>
+                    )}
+
+                    {item.mapUrl && (
+                      <a
+                        className="mapButton"
+                        href={item.mapUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Google Maps 導航
+                        <span>↗</span>
+                      </a>
+                    )}
                   </div>
-
-                  <h3>{item.place}</h3>
-                  <p>{item.description}</p>
-
-                  {item.mapUrl && (
-                    <a
-                      className="mapButton"
-                      href={item.mapUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      在 Google 地圖開啟
-                      <span>↗</span>
-                    </a>
-                  )}
-                </div>
-              </article>
-            ))}
+                </article>
+              )
+            )}
           </div>
         ) : (
           <div className="emptyCard">
@@ -419,6 +528,24 @@ function TodayPage({
           </div>
         )}
       </section>
+
+      {day.notice && (
+        <section className="todayNotice">
+          <div>
+            <span>!</span>
+          </div>
+
+          <article>
+            <small>
+              今日提醒
+            </small>
+
+            <p>
+              {day.notice}
+            </p>
+          </article>
+        </section>
+      )}
     </div>
   );
 }
@@ -435,8 +562,12 @@ function OverviewPage({
   return (
     <div className="page">
       <section className="pageIntro">
-        <p className="eyebrow">17 DAYS</p>
+        <p className="eyebrow">
+          17 DAYS
+        </p>
+
         <h1>旅行總覽</h1>
+
         <p>
           從溫哥華到黃刀鎮，再進入加拿大洛磯山脈。
           點選日期即可查看當天完整行程。
@@ -444,17 +575,28 @@ function OverviewPage({
       </section>
 
       {chapters.map((chapter) => {
-        const chapterDays = days.filter(
-          (day) => day.chapter === chapter
-        );
+        const chapterDays =
+          days.filter(
+            (day) =>
+              day.chapter === chapter
+          );
 
         return (
-          <section className="chapterSection" key={chapter}>
+          <section
+            className="chapterSection"
+            key={chapter}
+          >
             <div className="chapterHeader">
               <span>
-                {shortDate(chapterDays[0].date)} —{' '}
-                {shortDate(chapterDays[chapterDays.length - 1].date)}
+                {shortDate(chapterDays[0].date)}
+                {' — '}
+                {shortDate(
+                  chapterDays[
+                    chapterDays.length - 1
+                  ].date
+                )}
               </span>
+
               <h2>{chapter}</h2>
             </div>
 
@@ -463,21 +605,37 @@ function OverviewPage({
                 <button
                   className="dayCard"
                   key={day.date}
-                  onClick={() => onOpenDay(day.date)}
+                  onClick={() =>
+                    onOpenDay(day.date)
+                  }
                 >
                   <div className="dayDate">
-                    <strong>{shortDate(day.date)}</strong>
-                    <span>{weekday(day.date)}</span>
+                    <strong>
+                      {shortDate(day.date)}
+                    </strong>
+
+                    <span>
+                      {weekday(day.date)}
+                    </span>
                   </div>
 
                   <div className="dayCardContent">
-                    <h3>{day.title}</h3>
+                    <h3>
+                      {day.title}
+                    </h3>
+
                     <p>
-                      {day.dayTemp} · {stars(day.level)}
+                      {day.dayTemp}
+                      {' · '}
+                      LEVEL {day.level}
+                      {' '}
+                      {levelLabel(day.level)}
                     </p>
                   </div>
 
-                  <span className="arrow">→</span>
+                  <span className="arrow">
+                    →
+                  </span>
                 </button>
               ))}
             </div>
@@ -489,7 +647,8 @@ function OverviewPage({
 }
 
 function DocumentsPage() {
-  const [category, setCategory] = useState('全部');
+  const [category, setCategory] =
+    useState('全部');
 
   const categories = [
     '全部',
@@ -503,13 +662,20 @@ function DocumentsPage() {
   const visible =
     category === '全部'
       ? documents
-      : documents.filter((doc) => doc.category === category);
+      : documents.filter(
+          (doc) =>
+            doc.category === category
+        );
 
   return (
     <div className="page">
       <section className="pageIntro">
-        <p className="eyebrow">TRAVEL WALLET</p>
+        <p className="eyebrow">
+          TRAVEL WALLET
+        </p>
+
         <h1>重要檔案</h1>
+
         <p>
           旅行途中需要快速找到的機票、住宿、租車、
           景點與保險文件都集中在這裡。
@@ -521,8 +687,14 @@ function DocumentsPage() {
           {categories.map((item) => (
             <button
               key={item}
-              className={category === item ? 'active' : ''}
-              onClick={() => setCategory(item)}
+              className={
+                category === item
+                  ? 'active'
+                  : ''
+              }
+              onClick={() =>
+                setCategory(item)
+              }
             >
               {item}
             </button>
@@ -531,13 +703,21 @@ function DocumentsPage() {
 
         <div className="documentList">
           {visible.map((doc) => (
-            <article className="documentCard" key={doc.name}>
+            <article
+              className="documentCard"
+              key={doc.name}
+            >
               <span className="documentCategory">
                 {doc.category}
               </span>
 
-              <h3>{doc.name}</h3>
-              <p>{doc.description}</p>
+              <h3>
+                {doc.name}
+              </h3>
+
+              <p>
+                {doc.description}
+              </p>
 
               <div className="documentPending">
                 等待加入文件連結
@@ -567,7 +747,10 @@ function OutfitsPage({
   return (
     <div className="page">
       <section className="pageIntro outfitIntro">
-        <p className="eyebrow">DAILY WARDROBE</p>
+        <p className="eyebrow">
+          DAILY WARDROBE
+        </p>
+
         <h1>每日穿搭</h1>
 
         <div className="dateScroller">
@@ -575,12 +758,24 @@ function OutfitsPage({
             <button
               key={item.date}
               className={
-                item.date === day.date ? 'active' : ''
+                item.date === day.date
+                  ? 'active'
+                  : ''
               }
-              onClick={() => onSelect(item.date)}
+              onClick={() =>
+                onSelect(item.date)
+              }
             >
-              <strong>{shortDate(item.date)}</strong>
-              <span>{weekday(item.date).replace('星期', '週')}</span>
+              <strong>
+                {shortDate(item.date)}
+              </strong>
+
+              <span>
+                {weekday(item.date).replace(
+                  '星期',
+                  '週'
+                )}
+              </span>
             </button>
           ))}
         </div>
@@ -589,27 +784,48 @@ function OutfitsPage({
       <section className="outfitHero">
         <div>
           <p className="eyebrow">
-            {displayDate(day.date)} · {day.chapter}
+            {displayDate(day.date)}
+            {' · '}
+            {day.chapter}
           </p>
-          <h2>{day.title}</h2>
+
+          <h2>
+            {day.title}
+          </h2>
         </div>
 
         <div className="outfitTemperature">
           <span>白天</span>
-          <strong>{day.dayTemp}</strong>
-          <small>早晚 {day.nightTemp}</small>
+
+          <strong>
+            {day.dayTemp}
+          </strong>
+
+          <small>
+            早晚 {day.nightTemp}
+          </small>
         </div>
       </section>
 
       <section className="contentSection">
         <div className="levelBanner">
           <div>
-            <span>穿搭厚度</span>
-            <strong>LEVEL {day.level}</strong>
+            <span>
+              穿搭厚度
+            </span>
+
+            <strong>
+              LEVEL {day.level}
+            </strong>
           </div>
 
-          <b>{stars(day.level)}</b>
-          <p>{day.weather}</p>
+          <b>
+            {levelLabel(day.level)}
+          </b>
+
+          <p>
+            {day.weather}
+          </p>
         </div>
 
         <div className="lookGrid">
@@ -620,9 +836,17 @@ function OutfitsPage({
             />
 
             <div>
-              <span>男生穿搭</span>
-              <h3>今日造型</h3>
-              <p>{day.maleOutfit}</p>
+              <span>
+                男生穿搭
+              </span>
+
+              <h3>
+                今日造型
+              </h3>
+
+              <p>
+                {day.maleOutfit}
+              </p>
             </div>
           </article>
 
@@ -633,9 +857,17 @@ function OutfitsPage({
             />
 
             <div>
-              <span>女生穿搭</span>
-              <h3>今日造型</h3>
-              <p>{day.femaleOutfit}</p>
+              <span>
+                女生穿搭
+              </span>
+
+              <h3>
+                今日造型
+              </h3>
+
+              <p>
+                {day.femaleOutfit}
+              </p>
             </div>
           </article>
         </div>
@@ -671,22 +903,32 @@ function PackingPage({
   onToggle: (id: string) => void;
 }) {
   const categories = [
-    ...new Set(packingItems.map((item) => item.category)),
+    ...new Set(
+      packingItems.map(
+        (item) => item.category
+      )
+    ),
   ];
 
-  const completed = packingItems.filter(
-    (item) => checked[item.id]
-  ).length;
+  const completed =
+    packingItems.filter(
+      (item) => checked[item.id]
+    ).length;
 
   const progress = Math.round(
-    (completed / packingItems.length) * 100
+    (completed / packingItems.length) *
+      100
   );
 
   return (
     <div className="page">
       <section className="pageIntro">
-        <p className="eyebrow">PACKING LIST</p>
+        <p className="eyebrow">
+          PACKING LIST
+        </p>
+
         <h1>行李清單</h1>
+
         <p>
           重要項目先確認。勾選狀態會保存在這台手機或電腦。
         </p>
@@ -694,54 +936,86 @@ function PackingPage({
         <div className="packingProgress">
           <div>
             <strong>
-              {completed} / {packingItems.length}
+              {completed}
+              {' / '}
+              {packingItems.length}
             </strong>
-            <span>已準備</span>
+
+            <span>
+              已準備
+            </span>
           </div>
 
-          <b>{progress}%</b>
+          <b>
+            {progress}%
+          </b>
 
           <div className="progressTrack">
-            <span style={{ width: `${progress}%` }} />
+            <span
+              style={{
+                width: `${progress}%`,
+              }}
+            />
           </div>
         </div>
       </section>
 
       <section className="contentSection packingSections">
-        {categories.map((category) => (
-          <div className="packingGroup" key={category}>
-            <h2>{category}</h2>
+        {categories.map(
+          (category) => (
+            <div
+              className="packingGroup"
+              key={category}
+            >
+              <h2>
+                {category}
+              </h2>
 
-            {packingItems
-              .filter((item) => item.category === category)
-              .map((item) => (
-                <label
-                  className={
-                    checked[item.id]
-                      ? 'checkItem checked'
-                      : 'checkItem'
-                  }
-                  key={item.id}
-                >
-                  <input
-                    type="checkbox"
-                    checked={!!checked[item.id]}
-                    onChange={() => onToggle(item.id)}
-                  />
+              {packingItems
+                .filter(
+                  (item) =>
+                    item.category ===
+                    category
+                )
+                .map((item) => (
+                  <label
+                    className={
+                      checked[item.id]
+                        ? 'checkItem checked'
+                        : 'checkItem'
+                    }
+                    key={item.id}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={
+                        !!checked[item.id]
+                      }
+                      onChange={() =>
+                        onToggle(item.id)
+                      }
+                    />
 
-                  <span className="customCheck">
-                    {checked[item.id] ? '✓' : ''}
-                  </span>
+                    <span className="customCheck">
+                      {checked[item.id]
+                        ? '✓'
+                        : ''}
+                    </span>
 
-                  <strong>{item.name}</strong>
+                    <strong>
+                      {item.name}
+                    </strong>
 
-                  {item.important && (
-                    <small>重要</small>
-                  )}
-                </label>
-              ))}
-          </div>
-        ))}
+                    {item.important && (
+                      <small>
+                        重要
+                      </small>
+                    )}
+                  </label>
+                ))}
+            </div>
+          )
+        )}
       </section>
     </div>
   );
