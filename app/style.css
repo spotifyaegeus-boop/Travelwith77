@@ -17,17 +17,9 @@ body {
   margin: 0;
   background: #ebe8df;
   color: #222923;
-
-  font-family:
-    "Noto Sans TC",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-
+  font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 }
 
 button,
@@ -44,35 +36,26 @@ img {
   max-width: 100%;
 }
 
-a {
-  color: inherit;
-}
-
 main {
   width: 100%;
   max-width: 1240px;
   min-height: 100vh;
-
   margin: 0 auto;
   padding-bottom: 120px;
-
   background: #f8f5ee;
 }
 
 /* =========================================================
-   SITE HEADER
+   HEADER
 ========================================================= */
 
 .siteHeader {
-  min-height: 132px;
-
-  padding: 22px 28px;
-
+  min-height: 128px;
+  padding: 22px 30px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-
   background: #f8f5ee;
   border-bottom: 1px solid #d6d1c7;
 }
@@ -80,124 +63,160 @@ main {
 .siteHeader > div {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
 }
 
 .siteHeader strong {
-  display: block;
-
-  font-size: clamp(25px, 4vw, 38px);
-  line-height: 1.05;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-
   color: #24332b;
+  font-size: clamp(25px, 4vw, 38px);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -.025em;
 }
 
 .siteHeader span {
-  color: #6f766f;
-
-  font-size: 14px;
+  color: #707870;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: .12em;
 }
 
 .siteHeader p {
   margin: 0;
-
-  color: #6f766f;
-
-  font-size: 15px;
+  color: #707870;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 0.08em;
-
+  letter-spacing: .08em;
   white-space: nowrap;
 }
 
 /* =========================================================
-   TODAY / DAY DETAIL
+   SHARED
+========================================================= */
+
+.contentPage,
+.todayOutfit,
+.routeSection,
+.levelContent,
+.layerSection,
+.bringSection {
+  padding: clamp(52px, 7vw, 88px) clamp(24px, 5vw, 64px);
+}
+
+.contentPage {
+  min-height: calc(100vh - 128px);
+}
+
+.eyebrow {
+  margin: 0 0 14px;
+  color: #737c74;
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 800;
+  letter-spacing: .18em;
+}
+
+.lightEyebrow {
+  color: rgba(255, 255, 255, .62);
+}
+
+h2 {
+  margin: 0 0 36px;
+  color: #243029;
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -.04em;
+}
+
+/* =========================================================
+   DAY HERO
 ========================================================= */
 
 .todayPage {
   width: 100%;
 }
 
-/* =========================================================
-   HERO
-========================================================= */
-
 .todayHero {
-  width: 100%;
-
-  padding:
-    clamp(48px, 7vw, 84px)
-    clamp(24px, 5vw, 64px);
-
+  padding: clamp(48px, 7vw, 84px) clamp(24px, 5vw, 64px);
   background: #304f40;
   color: #f7f3e9;
 }
 
 .dateLabel {
   margin: 0 0 24px;
-
+  color: rgba(247, 243, 233, .78);
   font-size: 16px;
-  line-height: 1.4;
   font-weight: 700;
-  letter-spacing: 0.08em;
-
-  color: rgba(247, 243, 233, 0.78);
+  letter-spacing: .08em;
 }
 
 .todayHero h1 {
   max-width: 980px;
-
   margin: 0;
-
+  color: #f7f3e9;
   font-size: clamp(42px, 7vw, 80px);
   line-height: 1.13;
   font-weight: 800;
-  letter-spacing: -0.045em;
-
-  color: #f7f3e9;
+  letter-spacing: -.045em;
 }
 
 .chapterLabel {
-  margin: 24px 0 46px;
-
-  color: rgba(247, 243, 233, 0.74);
-
+  margin: 24px 0 44px;
+  color: rgba(247, 243, 233, .72);
   font-size: 19px;
-  line-height: 1.6;
   font-weight: 600;
 }
 
-.levelLine {
-  min-height: 70px;
+/* =========================================================
+   CLICKABLE LEVEL
+========================================================= */
 
+.levelButton {
+  width: 100%;
+  min-height: 84px;
   padding: 20px 0;
-
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, .24);
+  border-bottom: 1px solid rgba(255, 255, 255, .24);
+  background: transparent;
+  color: #fff;
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-
-  border-top: 1px solid rgba(255, 255, 255, 0.22);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+  justify-content: space-between;
+  gap: 20px;
+  text-align: left;
 }
 
-.levelLine span {
-  color: rgba(247, 243, 233, 0.7);
+.levelButton:hover {
+  background: rgba(255, 255, 255, .045);
+}
 
-  font-size: 15px;
+.levelButton > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.levelButton span {
+  color: rgba(247, 243, 233, .67);
+  font-size: 14px;
   font-weight: 500;
 }
 
-.levelLine strong {
-  color: #ffffff;
-
+.levelButton strong {
+  color: #fff;
   font-size: 20px;
   font-weight: 800;
 }
+
+.levelButton svg {
+  flex: none;
+}
+
+/* =========================================================
+   WEATHER
+========================================================= */
 
 .weatherGrid {
   display: grid;
@@ -205,171 +224,100 @@ main {
 }
 
 .weatherGrid > div {
-  min-width: 0;
-
   padding: 32px 0 30px;
 }
 
 .weatherGrid > div + div {
   padding-left: 36px;
-
-  border-left: 1px solid rgba(255, 255, 255, 0.22);
+  border-left: 1px solid rgba(255, 255, 255, .22);
 }
 
 .weatherGrid span {
   display: block;
-
   margin-bottom: 10px;
-
-  color: rgba(247, 243, 233, 0.7);
-
-  font-size: 15px;
+  color: rgba(247, 243, 233, .7);
+  font-size: 14px;
   font-weight: 500;
 }
 
 .weatherGrid strong {
   display: block;
-
-  color: #ffffff;
-
+  color: #fff;
   font-size: clamp(40px, 7vw, 70px);
   line-height: 1;
   font-weight: 600;
-  letter-spacing: -0.05em;
+  letter-spacing: -.05em;
 }
 
 .weatherText {
   margin: 0;
-
   padding-top: 24px;
-
-  border-top: 1px solid rgba(255, 255, 255, 0.22);
-
-  color: rgba(255, 255, 255, 0.9);
-
+  border-top: 1px solid rgba(255, 255, 255, .22);
+  color: rgba(255, 255, 255, .9);
   font-size: 17px;
   line-height: 1.8;
   font-weight: 500;
 }
 
 /* =========================================================
-   DESTINATION HERO IMAGE
+   DESTINATION IMAGE
 ========================================================= */
 
 .destinationHero {
   position: relative;
-
   width: 100%;
   height: clamp(300px, 52vw, 590px);
-
   margin: 0;
-
   overflow: hidden;
-
   background: #d5d2c9;
 }
 
 .destinationHero img {
   display: block;
-
   width: 100%;
   height: 100%;
-
   object-fit: cover;
 }
 
 .destinationHero::after {
   content: "";
-
   position: absolute;
   inset: 38% 0 0;
-
-  pointer-events: none;
-
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(20, 28, 23, 0),
-      rgba(20, 28, 23, 0.62)
-    );
+  background: linear-gradient(
+    to bottom,
+    rgba(20, 28, 23, 0),
+    rgba(20, 28, 23, .64)
+  );
 }
 
 .destinationHero figcaption {
   position: absolute;
   z-index: 2;
-
   left: clamp(24px, 5vw, 64px);
   right: clamp(24px, 5vw, 64px);
   bottom: clamp(24px, 5vw, 48px);
-
-  color: #ffffff;
+  color: #fff;
 }
 
 .destinationHero figcaption span {
   display: block;
-
   margin-bottom: 8px;
-
   font-size: 11px;
-  line-height: 1.4;
   font-weight: 800;
-  letter-spacing: 0.16em;
-
-  opacity: 0.82;
+  letter-spacing: .16em;
+  opacity: .82;
 }
 
 .destinationHero figcaption strong {
   display: block;
-
   max-width: 800px;
-
   font-size: clamp(22px, 4vw, 38px);
   line-height: 1.25;
   font-weight: 700;
 }
 
 /* =========================================================
-   SHARED CONTENT
-========================================================= */
-
-.contentPage,
-.todayOutfit,
-.routeSection {
-  width: 100%;
-
-  padding:
-    clamp(52px, 7vw, 88px)
-    clamp(24px, 5vw, 64px);
-}
-
-.contentPage {
-  min-height: calc(100vh - 132px);
-}
-
-.eyebrow {
-  margin: 0 0 14px;
-
-  color: #727b73;
-
-  font-size: 11px;
-  line-height: 1.4;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-}
-
-h2 {
-  margin: 0 0 36px;
-
-  color: #243029;
-
-  font-size: clamp(34px, 5vw, 58px);
-  line-height: 1.16;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-}
-
-/* =========================================================
-   OUTFIT SUMMARY IN DAY DETAIL
+   DAILY OUTFIT
 ========================================================= */
 
 .todayOutfit {
@@ -378,7 +326,6 @@ h2 {
 
 .outfitRows {
   width: 100%;
-
   border-top: 1px solid #d2cdc2;
 }
 
@@ -386,62 +333,47 @@ h2 {
   display: grid;
   grid-template-columns: 130px minmax(0, 1fr);
   gap: 20px;
-
   padding: 22px 0;
-
   border-bottom: 1px solid #d2cdc2;
-
   font-size: 16px;
   line-height: 1.75;
 }
 
 .outfitRows b {
   color: #687168;
-
   font-weight: 700;
 }
 
 .outfitRows span {
   color: #303730;
-
   font-weight: 500;
 }
 
 .notice {
   margin: 30px 0 0;
-
   padding: 18px 20px;
-
   background: #e7ece7;
   border-left: 4px solid #304f40;
-
   color: #354139;
-
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.75;
   font-weight: 500;
 }
 
 .primaryButton {
-  width: min(100%, 380px);
-  min-height: 56px;
-
+  width: min(100%, 440px);
+  min-height: 58px;
   margin-top: 30px;
   padding: 16px 20px;
-
+  border: 0;
+  border-radius: 10px;
+  background: #304f40;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-
-  border-radius: 10px;
-
-  background: #304f40;
-  color: #ffffff;
-
-  text-decoration: none;
-
-  font-size: 16px;
+  text-align: left;
   font-weight: 700;
 }
 
@@ -449,12 +381,8 @@ h2 {
   background: #294538;
 }
 
-.primaryButton svg {
-  flex: none;
-}
-
 /* =========================================================
-   DAILY ITINERARY
+   ITINERARY
 ========================================================= */
 
 .routeSection {
@@ -462,8 +390,6 @@ h2 {
 }
 
 .timeline {
-  width: 100%;
-
   border-top: 1px solid #cbc6ba;
 }
 
@@ -471,26 +397,20 @@ h2 {
   display: grid;
   grid-template-columns: 96px minmax(0, 1fr);
   gap: 24px;
-
   padding: 25px 0;
-
   border-bottom: 1px solid #cbc6ba;
 }
 
 .stop time {
   padding-top: 2px;
-
   color: #667168;
-
   font-size: 15px;
   font-weight: 700;
 }
 
 .stop b {
   display: block;
-
   color: #29312b;
-
   font-size: 18px;
   line-height: 1.5;
   font-weight: 700;
@@ -498,25 +418,19 @@ h2 {
 
 .stop p {
   margin: 7px 0 13px;
-
   color: #4e554f;
-
   font-size: 15px;
   line-height: 1.75;
 }
 
 .mapLink {
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   gap: 7px;
-
-  min-height: 40px;
-
   color: #304f40;
-
   font-size: 14px;
   font-weight: 700;
-
   text-decoration: none;
 }
 
@@ -524,8 +438,223 @@ h2 {
   text-decoration: underline;
 }
 
-.mapLink svg {
+/* =========================================================
+   SUB PAGE HEADER
+========================================================= */
+
+.subPageHeader {
+  padding: 18px clamp(24px, 5vw, 64px);
+  background: #f8f5ee;
+  border-bottom: 1px solid #d8d3c8;
+}
+
+.backButton {
+  min-height: 44px;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: #304f40;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.backButton:hover {
+  opacity: .68;
+}
+
+/* =========================================================
+   LEVEL GUIDE HERO
+========================================================= */
+
+.levelGuidePage {
+  width: 100%;
+}
+
+.levelGuideHero {
+  padding: clamp(50px, 8vw, 92px) clamp(24px, 5vw, 64px);
+  background: #304f40;
+  color: #fff;
+}
+
+.levelNumber {
+  display: block;
+  margin-bottom: 14px;
+  color: #cbd8cf;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.levelGuideHero h1 {
+  max-width: 850px;
+  margin: 0;
+  color: #fff;
+  font-size: clamp(48px, 8vw, 88px);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -.05em;
+}
+
+.levelTemperature {
+  margin: 22px 0 0;
+  color: #fff;
+  font-size: clamp(22px, 4vw, 34px);
+  font-weight: 600;
+}
+
+.levelSummary {
+  max-width: 700px;
+  margin: 22px 0 0;
+  color: rgba(255, 255, 255, .8);
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.dayContext {
+  max-width: 700px;
+  margin-top: 44px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, .24);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.dayContext span {
+  color: rgba(255, 255, 255, .6);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+
+.dayContext strong {
+  color: #fff;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.dayContext small {
+  color: rgba(255, 255, 255, .72);
+  font-size: 14px;
+}
+
+/* =========================================================
+   MORNING / DAY / EVENING
+========================================================= */
+
+.levelContent {
+  background: #faf8f2;
+}
+
+.timeWearGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid #cec9be;
+  border-bottom: 1px solid #cec9be;
+}
+
+.timeWearGrid article {
+  padding: 30px 28px 30px 0;
+}
+
+.timeWearGrid article + article {
+  padding-left: 28px;
+  border-left: 1px solid #cec9be;
+}
+
+.timeWearGrid span {
+  display: block;
+  margin-bottom: 5px;
+  color: #304f40;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.timeWearGrid strong {
+  display: block;
+  color: #818780;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+
+.timeWearGrid p {
+  margin: 18px 0 0;
+  color: #4e554f;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+/* =========================================================
+   LAYER SYSTEM
+========================================================= */
+
+.layerSection {
+  background: #efede6;
+}
+
+.layerList {
+  border-top: 1px solid #c9c4b9;
+}
+
+.layerList > div {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 22px;
+  padding: 24px 0;
+  border-bottom: 1px solid #c9c4b9;
+}
+
+.layerList > div > span {
+  color: #8a9089;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.layerList b {
+  color: #29312b;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.layerList p {
+  margin: 7px 0 0;
+  color: #596159;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   BRING
+========================================================= */
+
+.bringSection {
+  background: #faf8f2;
+}
+
+.bringCard {
+  padding: 24px;
+  border-radius: 12px;
+  background: #304f40;
+  color: #fff;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.bringCard svg {
   flex: none;
+  margin-top: 2px;
+}
+
+.bringCard p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 600;
 }
 
 /* =========================================================
@@ -533,16 +662,11 @@ h2 {
 ========================================================= */
 
 .chapterTabs {
-  width: 100%;
-
   display: flex;
   gap: 8px;
-
   margin-bottom: 28px;
   padding-bottom: 8px;
-
   overflow-x: auto;
-  overscroll-behavior-inline: contain;
   scrollbar-width: none;
 }
 
@@ -552,66 +676,48 @@ h2 {
 
 .chapterTabs button {
   flex: none;
-
   min-height: 48px;
-
   padding: 11px 17px;
-
   border: 1px solid #aaa99f;
   border-radius: 9px;
-
   background: transparent;
   color: #293029;
-
   white-space: nowrap;
-
   font-size: 14px;
   font-weight: 600;
-}
-
-.chapterTabs button:hover {
-  background: rgba(48, 79, 64, 0.06);
 }
 
 .chapterTabs button.active {
   background: #304f40;
   border-color: #304f40;
-  color: #ffffff;
+  color: #fff;
 }
 
 .dayList {
-  width: 100%;
-
   border-top: 1px solid #cec9be;
 }
 
 .dayList button {
   width: 100%;
   min-height: 88px;
-
   padding: 20px 4px;
-
+  border: 0;
+  border-bottom: 1px solid #cec9be;
+  background: transparent;
+  color: inherit;
   display: grid;
   grid-template-columns: 135px minmax(0, 1fr) auto;
   align-items: center;
   gap: 20px;
-
-  border: 0;
-  border-bottom: 1px solid #cec9be;
-
-  background: transparent;
-  color: inherit;
-
   text-align: left;
 }
 
 .dayList button:hover {
-  background: rgba(48, 79, 64, 0.055);
+  background: rgba(48, 79, 64, .055);
 }
 
 .dayList span {
   color: #6d766e;
-
   font-size: 14px;
   line-height: 1.55;
   font-weight: 600;
@@ -619,7 +725,6 @@ h2 {
 
 .dayList strong {
   color: #29312b;
-
   font-size: 17px;
   line-height: 1.55;
   font-weight: 700;
@@ -627,42 +732,8 @@ h2 {
 
 .dayList small {
   color: #788078;
-
   font-size: 13px;
   font-weight: 500;
-
-  text-align: right;
-}
-
-/* =========================================================
-   OVERVIEW DETAIL BACK BUTTON
-========================================================= */
-
-.backButton {
-  min-height: 48px;
-
-  padding: 10px 0;
-
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-
-  border: 0;
-
-  background: transparent;
-  color: #304f40;
-
-  font-size: 15px;
-  line-height: 1.4;
-  font-weight: 700;
-}
-
-.backButton:hover {
-  opacity: 0.68;
-}
-
-.backButton svg {
-  flex: none;
 }
 
 /* =========================================================
@@ -670,144 +741,29 @@ h2 {
 ========================================================= */
 
 .emptyCard {
-  width: 100%;
-
   padding: 30px;
-
   border: 1px solid #d1ccc1;
   border-radius: 14px;
-
   background: #eeece5;
 }
 
 .emptyCard svg {
-  display: block;
-
   margin-bottom: 18px;
-
   color: #304f40;
 }
 
 .emptyCard strong {
   display: block;
-
   margin-bottom: 8px;
-
   color: #29312b;
-
   font-size: 19px;
   font-weight: 700;
 }
 
 .emptyCard p {
   max-width: 650px;
-
   margin: 0;
-
   color: #626a63;
-
-  font-size: 15px;
-  line-height: 1.75;
-}
-
-/* =========================================================
-   OUTFIT PAGE
-========================================================= */
-
-.outfitIntro {
-  width: 100%;
-
-  padding: 26px 0 30px;
-
-  border-top: 1px solid #d0cbc0;
-  border-bottom: 1px solid #d0cbc0;
-}
-
-.outfitIntro span {
-  color: #737b74;
-
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.outfitIntro h3 {
-  margin: 8px 0;
-
-  color: #29312b;
-
-  font-size: clamp(24px, 4vw, 30px);
-  line-height: 1.35;
-  font-weight: 800;
-}
-
-.outfitIntro p {
-  margin: 0;
-
-  color: #616961;
-
-  font-size: 15px;
-  line-height: 1.7;
-  font-weight: 500;
-}
-
-.lookgrid {
-  width: 100%;
-
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-
-  margin-top: 32px;
-}
-
-.lookgrid > div {
-  min-width: 0;
-}
-
-.photo,
-.placeholder {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-
-  border-radius: 9px;
-
-  background: #d9d5cc;
-}
-
-.photo {
-  display: block;
-
-  object-fit: cover;
-}
-
-.placeholder {
-  display: grid;
-  place-items: center;
-
-  padding: 20px;
-
-  color: #70756f;
-
-  text-align: center;
-
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.lookgrid h3 {
-  margin: 17px 0 8px;
-
-  color: #29312b;
-
-  font-size: 19px;
-  font-weight: 700;
-}
-
-.lookgrid p {
-  margin: 0;
-
-  color: #4e554f;
-
   font-size: 15px;
   line-height: 1.75;
 }
@@ -816,77 +772,82 @@ h2 {
    PACKING
 ========================================================= */
 
-.checklistPreview {
-  width: 100%;
+.packingProgress {
+  margin-bottom: 26px;
+  padding: 18px 20px;
+  border-radius: 10px;
+  background: #e7ece7;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  color: #304f40;
+}
 
+.packingProgress span {
+  font-weight: 600;
+}
+
+.packingProgress strong {
+  font-weight: 800;
+}
+
+.checklistPreview {
   border-top: 1px solid #cec9be;
 }
 
 .checklistPreview label {
   min-height: 66px;
-
   padding: 10px 2px;
-
   display: flex;
   align-items: center;
   gap: 15px;
-
   border-bottom: 1px solid #cec9be;
-
   color: #303730;
-
   font-size: 16px;
   font-weight: 600;
-
   cursor: pointer;
 }
 
 .checklistPreview input {
   flex: none;
-
   width: 22px;
   height: 22px;
-
   margin: 0;
-
   accent-color: #304f40;
 }
 
 /* =========================================================
-   BOTTOM NAVIGATION
+   BOTTOM NAV — 4 ITEMS
 ========================================================= */
 
 .bottomNav {
   position: fixed;
   z-index: 100;
-
   left: 50%;
   bottom: max(12px, env(safe-area-inset-bottom));
-
   transform: translateX(-50%);
 
-  width: min(calc(100% - 24px), 760px);
-
+  width: min(calc(100% - 24px), 680px);
   padding: 7px;
 
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 2px;
 
   background: #24332b;
-
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, .12);
   border-radius: 27px;
 
-  box-shadow:
-    0 12px 34px rgba(23, 29, 25, 0.2);
+  box-shadow: 0 12px 34px rgba(23, 29, 25, .2);
 }
 
 .bottomNav a {
   min-width: 0;
   min-height: 68px;
-
   padding: 8px 3px;
+  border-radius: 21px;
+
+  color: #abb5ad;
 
   display: flex;
   flex-direction: column;
@@ -894,23 +855,17 @@ h2 {
   justify-content: center;
   gap: 5px;
 
-  border-radius: 21px;
-
-  color: #abb5ad;
-
   text-decoration: none;
 
   font-size: 12px;
   line-height: 1;
   font-weight: 700;
 
-  transition:
-    background 0.18s ease,
-    color 0.18s ease;
+  transition: background .18s ease, color .18s ease;
 }
 
 .bottomNav a:hover {
-  color: #ffffff;
+  color: #fff;
 }
 
 .bottomNav a.active {
@@ -928,22 +883,6 @@ h2 {
 }
 
 /* =========================================================
-   TABLET
-========================================================= */
-
-@media (max-width: 900px) {
-  .dayList button {
-    grid-template-columns: 115px minmax(0, 1fr) auto;
-    gap: 16px;
-  }
-
-  .stop {
-    grid-template-columns: 82px minmax(0, 1fr);
-    gap: 20px;
-  }
-}
-
-/* =========================================================
    MOBILE
 ========================================================= */
 
@@ -957,18 +896,9 @@ h2 {
     padding-bottom: 108px;
   }
 
-  /* HEADER */
-
   .siteHeader {
-    min-height: 118px;
-
+    min-height: 116px;
     padding: 19px 22px;
-
-    gap: 16px;
-  }
-
-  .siteHeader > div {
-    gap: 7px;
   }
 
   .siteHeader strong {
@@ -980,10 +910,8 @@ h2 {
   }
 
   .siteHeader p {
-    font-size: 13px;
+    font-size: 12px;
   }
-
-  /* HERO */
 
   .todayHero {
     padding: 48px 24px 42px;
@@ -991,7 +919,6 @@ h2 {
 
   .dateLabel {
     margin-bottom: 19px;
-
     font-size: 14px;
   }
 
@@ -1001,24 +928,20 @@ h2 {
   }
 
   .chapterLabel {
-    margin: 20px 0 36px;
-
+    margin: 20px 0 34px;
     font-size: 16px;
   }
 
-  .levelLine {
-    min-height: auto;
-
+  .levelButton {
+    min-height: 76px;
     padding: 17px 0;
-
-    gap: 7px 10px;
   }
 
-  .levelLine span {
+  .levelButton span {
     font-size: 13px;
   }
 
-  .levelLine strong {
+  .levelButton strong {
     font-size: 16px;
   }
 
@@ -1031,8 +954,6 @@ h2 {
   }
 
   .weatherGrid span {
-    margin-bottom: 8px;
-
     font-size: 13px;
   }
 
@@ -1042,12 +963,8 @@ h2 {
 
   .weatherText {
     padding-top: 20px;
-
     font-size: 15px;
-    line-height: 1.75;
   }
-
-  /* DESTINATION */
 
   .destinationHero {
     height: 68vw;
@@ -1065,55 +982,34 @@ h2 {
     font-size: 22px;
   }
 
-  /* CONTENT */
-
   .contentPage,
   .todayOutfit,
-  .routeSection {
+  .routeSection,
+  .levelContent,
+  .layerSection,
+  .bringSection {
     padding: 50px 24px;
-  }
-
-  .contentPage {
-    min-height: calc(100vh - 118px);
   }
 
   h2 {
     margin-bottom: 30px;
-
     font-size: 36px;
   }
-
-  /* OUTFIT SUMMARY */
 
   .outfitRows > div {
     grid-template-columns: 92px minmax(0, 1fr);
     gap: 14px;
-
     padding: 19px 0;
-
-    font-size: 15px;
-  }
-
-  .notice {
-    margin-top: 25px;
-
-    padding: 16px 17px;
-
     font-size: 15px;
   }
 
   .primaryButton {
     width: 100%;
-
-    margin-top: 25px;
   }
-
-  /* ITINERARY */
 
   .stop {
     grid-template-columns: 65px minmax(0, 1fr);
     gap: 15px;
-
     padding: 22px 0;
   }
 
@@ -1129,30 +1025,74 @@ h2 {
     font-size: 14px;
   }
 
+  /* LEVEL GUIDE */
+
+  .levelGuideHero {
+    padding: 54px 24px;
+  }
+
+  .levelNumber {
+    font-size: 15px;
+  }
+
+  .levelGuideHero h1 {
+    font-size: clamp(44px, 12vw, 62px);
+  }
+
+  .levelTemperature {
+    font-size: 22px;
+  }
+
+  .levelSummary {
+    font-size: 15px;
+  }
+
+  .dayContext {
+    margin-top: 34px;
+  }
+
+  .timeWearGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .timeWearGrid article {
+    padding: 24px 0;
+  }
+
+  .timeWearGrid article + article {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid #cec9be;
+  }
+
+  .layerList > div {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 14px;
+    padding: 21px 0;
+  }
+
+  .bringCard {
+    padding: 20px;
+  }
+
   /* OVERVIEW */
 
   .chapterTabs {
-    margin-right: -24px;
-
     width: calc(100% + 24px);
-
+    margin-right: -24px;
     padding-right: 24px;
   }
 
   .chapterTabs button {
     min-height: 46px;
-
     padding: 10px 15px;
-
     font-size: 13px;
   }
 
   .dayList button {
     min-height: 84px;
-
     grid-template-columns: 86px minmax(0, 1fr);
     gap: 14px;
-
     padding: 18px 2px;
   }
 
@@ -1168,52 +1108,18 @@ h2 {
     display: none;
   }
 
-  /* BACK */
-
-  .backButton {
-    min-height: 44px;
-
-    font-size: 14px;
-  }
-
-  /* OUTFIT PAGE */
-
-  .lookgrid {
-    grid-template-columns: 1fr;
-    gap: 36px;
-  }
-
-  .outfitIntro {
-    padding: 22px 0 26px;
-  }
-
-  .outfitIntro h3 {
-    font-size: 24px;
-  }
-
-  /* DOCUMENTS */
-
-  .emptyCard {
-    padding: 25px 22px;
-  }
-
   /* NAV */
 
   .bottomNav {
     bottom: max(8px, env(safe-area-inset-bottom));
-
     width: calc(100% - 16px);
-
     padding: 6px;
-
     border-radius: 25px;
   }
 
   .bottomNav a {
     min-height: 64px;
-
     border-radius: 20px;
-
     font-size: 11px;
   }
 
@@ -1224,7 +1130,7 @@ h2 {
 }
 
 /* =========================================================
-   VERY SMALL PHONE
+   SMALL PHONE
 ========================================================= */
 
 @media (max-width: 390px) {
@@ -1236,14 +1142,13 @@ h2 {
     font-size: 21px;
   }
 
-  .siteHeader p {
-    font-size: 11px;
-  }
-
   .todayHero,
   .contentPage,
   .todayOutfit,
-  .routeSection {
+  .routeSection,
+  .levelContent,
+  .layerSection,
+  .bringSection {
     padding-left: 20px;
     padding-right: 20px;
   }
@@ -1267,9 +1172,5 @@ h2 {
   .stop {
     grid-template-columns: 58px minmax(0, 1fr);
     gap: 12px;
-  }
-
-  .bottomNav a {
-    font-size: 10px;
   }
 }
