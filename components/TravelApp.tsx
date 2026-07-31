@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import type {
   TravelDay,
@@ -369,6 +369,56 @@ export default function TravelApp({
   const [checkedItems, setCheckedItems] =
     useState<string[]>([]);
 
+  const [packingReady, setPackingReady] =
+    useState(false);
+
+  useEffect(() => {
+    const validIds = new Set(
+      publishedPacking.map((item) => item.id)
+    );
+
+    const defaultIds = publishedPacking
+      .filter((item) => item.defaultCompleted)
+      .map((item) => item.id);
+
+    try {
+      const raw = window.localStorage.getItem(
+        'canada-2026-packing'
+      );
+
+      if (!raw) {
+        setCheckedItems(defaultIds);
+      } else {
+        const saved = JSON.parse(raw);
+
+        setCheckedItems(
+          Array.isArray(saved)
+            ? saved.filter(
+                (id): id is string =>
+                  typeof id === 'string' &&
+                  validIds.has(id)
+              )
+            : defaultIds
+        );
+      }
+    } catch {
+      setCheckedItems(defaultIds);
+    }
+
+    setPackingReady(true);
+  }, [publishedPacking]);
+
+  useEffect(() => {
+    if (!packingReady) {
+      return;
+    }
+
+    window.localStorage.setItem(
+      'canada-2026-packing',
+      JSON.stringify(checkedItems)
+    );
+  }, [checkedItems, packingReady]);
+
   const todayDate = getTripTodayDate();
 
   const todayDay =
@@ -428,6 +478,14 @@ export default function TravelApp({
         ? current.filter((x) => x !== id)
         : [...current, id]
     );
+  }
+
+  function resetPacking() {
+    const defaults = publishedPacking
+      .filter((item) => item.defaultCompleted)
+      .map((item) => item.id);
+
+    setCheckedItems(defaults);
   }
 
   if (!publishedDays.length) {
@@ -554,6 +612,7 @@ export default function TravelApp({
           items={publishedPacking}
           checkedItems={checkedItems}
           onToggle={togglePacking}
+          onReset={resetPacking}
         />
       )}
 
@@ -1250,10 +1309,12 @@ function PackingPage({
   items,
   checkedItems,
   onToggle,
+  onReset,
 }: {
   items: PackingItem[];
   checkedItems: string[];
   onToggle: (id: string) => void;
+  onReset: () => void;
 }) {
   const categories = [
     ...new Set(
@@ -1280,6 +1341,16 @@ function PackingPage({
           {completed} / {items.length}
         </strong>
       </div>
+
+      {!!items.length && (
+        <button
+          type="button"
+          className="packingResetButton"
+          onClick={onReset}
+        >
+          重設清單
+        </button>
+      )}
 
       {!items.length ? (
         <div className="emptyCard">
