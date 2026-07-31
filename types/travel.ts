@@ -28,11 +28,16 @@ export type ItineraryItem = {
   description: string;
   type: string;
   priority: string;
+
   mapUrl?: string;
+
+  /* 對應 Documents 工作表的 ID，例如 DOC003 */
+  documentIds?: string[];
 };
 
 export type TravelDocument = {
   id: string;
+
   category:
     | '航班'
     | '住宿'
@@ -45,6 +50,7 @@ export type TravelDocument = {
   description?: string;
   date?: string;
   url: string;
+
   published: boolean;
 };
 
@@ -52,8 +58,10 @@ export type PackingItem = {
   id: string;
   category: string;
   name: string;
+
   quantity?: string;
   description?: string;
   important?: boolean;
+
   published: boolean;
 };
