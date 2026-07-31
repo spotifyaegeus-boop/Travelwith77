@@ -1337,20 +1337,22 @@ function PackingPage({
       <div className="packingProgress">
         <span>準備進度</span>
 
-        <strong>
-          {completed} / {items.length}
-        </strong>
-      </div>
+        <div className="packingProgressActions">
+          <strong>
+            {completed} / {items.length}
+          </strong>
 
-      {!!items.length && (
-        <button
-          type="button"
-          className="packingResetButton"
-          onClick={onReset}
-        >
-          重設清單
-        </button>
-      )}
+          {!!items.length && (
+            <button
+              type="button"
+              className="packingResetButton"
+              onClick={onReset}
+            >
+              重設
+            </button>
+          )}
+        </div>
+      </div>
 
       {!items.length ? (
         <div className="emptyCard">
