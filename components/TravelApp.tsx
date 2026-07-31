@@ -75,6 +75,16 @@ function BackIcon() {
   );
 }
 
+function ImageIcon() {
+  return (
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="9" cy="9" r="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="m4 18 5-5 3.5 3.5L15 14l5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 /* =========================================================
    DATE HELPERS
 ========================================================= */
@@ -124,14 +134,16 @@ function getDateInTimeZone(timeZone: string) {
 }
 
 /*
-  8/13–8/15 Vancouver
-  8/16–8/18 Yellowknife
-  8/19–8/26 Alberta
-  8/27–8/28 Vancouver
+  旅行日期邏輯：
 
-  8/13 前：固定 8/13
-  旅行中：加拿大當地日期
-  8/28 後：固定 8/28
+  08/13–08/15 Vancouver
+  08/16–08/18 Yellowknife
+  08/19–08/26 Alberta
+  08/27–08/28 Vancouver
+
+  08/13 前 → 固定顯示 08/13
+  旅行期間 → 加拿大當地日期
+  08/28 後 → 固定顯示 08/28
 */
 
 function getTripTodayDate() {
@@ -161,10 +173,6 @@ function getTripTodayDate() {
     return vancouverDate;
   }
 
-  if (mountainNumber >= 20260816 && mountainNumber <= 20260826) {
-    return mountainDate;
-  }
-
   return vancouverDate;
 }
 
@@ -187,6 +195,7 @@ const levelGuides = {
     shoes: '舒適步行鞋、運動鞋',
     bring: '墨鏡、防曬、帽子、薄外套',
   },
+
   2: {
     title: '薄外層',
     temperature: '15–20°C',
@@ -201,6 +210,7 @@ const levelGuides = {
     shoes: '運動鞋、舒適步行鞋',
     bring: '薄外套、墨鏡、帽子',
   },
+
   3: {
     title: '保暖＋防風',
     temperature: '10–15°C',
@@ -215,6 +225,7 @@ const levelGuides = {
     shoes: '抓地力較好的步行鞋或健行鞋',
     bring: '防風外套、薄羽絨或刷毛中層',
   },
+
   4: {
     title: '羽絨分層',
     temperature: '5–10°C',
@@ -229,6 +240,7 @@ const levelGuides = {
     shoes: '健行鞋、防滑步行鞋',
     bring: '羽絨、Shell、薄帽、保暖配件',
   },
+
   5: {
     title: '高山禦寒',
     temperature: '0–5°C／高山強風',
@@ -248,6 +260,7 @@ const levelGuides = {
 function safeLevel(level: number): 1 | 2 | 3 | 4 | 5 {
   if (level <= 1) return 1;
   if (level >= 5) return 5;
+
   return Math.round(level) as 1 | 2 | 3 | 4 | 5;
 }
 
@@ -283,10 +296,14 @@ const packingItems = [
 ];
 
 /* =========================================================
-   MAIN
+   MAIN APP
 ========================================================= */
 
-export default function TravelApp({ days }: { days: TravelDay[] }) {
+export default function TravelApp({
+  days,
+}: {
+  days: TravelDay[];
+}) {
   const publishedDays = useMemo(
     () => days.filter((day) => day.published !== false),
     [days]
@@ -299,7 +316,8 @@ export default function TravelApp({ days }: { days: TravelDay[] }) {
 
   const [page, setPage] = useState<PageName>('today');
 
-  const [todayView, setTodayView] = useState<DayView>('detail');
+  const [todayView, setTodayView] =
+    useState<DayView>('detail');
 
   const [overviewView, setOverviewView] =
     useState<OverviewView>('list');
@@ -307,7 +325,8 @@ export default function TravelApp({ days }: { days: TravelDay[] }) {
   const [overviewDayView, setOverviewDayView] =
     useState<DayView>('detail');
 
-  const [overviewDate, setOverviewDate] = useState('');
+  const [overviewDate, setOverviewDate] =
+    useState('');
 
   const [overviewChapter, setOverviewChapter] =
     useState('全部');
@@ -319,12 +338,14 @@ export default function TravelApp({ days }: { days: TravelDay[] }) {
 
   const todayDay =
     publishedDays.find(
-      (day) => normalizeDate(day.date) === normalizeDate(todayDate)
+      (day) =>
+        normalizeDate(day.date) === normalizeDate(todayDate)
     ) || publishedDays[0];
 
   const overviewDay =
-    publishedDays.find((day) => day.date === overviewDate) ||
-    publishedDays[0];
+    publishedDays.find(
+      (day) => day.date === overviewDate
+    ) || publishedDays[0];
 
   const overviewDays = useMemo(() => {
     if (overviewChapter === '全部') {
@@ -430,7 +451,7 @@ export default function TravelApp({ days }: { days: TravelDay[] }) {
         <section className="contentPage">
           <p className="eyebrow">CANADA 2026</p>
           <h2>目前沒有可顯示的行程</h2>
-          <p>請確認行程資料至少有一天設定為發布。</p>
+          <p>請確認至少有一天行程設定為發布。</p>
         </section>
       </main>
     );
@@ -442,35 +463,38 @@ export default function TravelApp({ days }: { days: TravelDay[] }) {
 
       {/* TODAY */}
 
-      {page === 'today' && todayDay && todayView === 'detail' && (
-        <DayDetail
-          day={todayDay}
-          mode="today"
-          onOpenLevel={openTodayLevel}
-        />
-      )}
+      {page === 'today' &&
+        todayDay &&
+        todayView === 'detail' && (
+          <DayDetail
+            day={todayDay}
+            mode="today"
+            onOpenLevel={openTodayLevel}
+          />
+        )}
 
-      {page === 'today' && todayDay && todayView === 'level' && (
-        <LevelGuidePage
-          day={todayDay}
-          onBack={closeTodayLevel}
-          backLabel={`返回 ${formatDate(todayDay.date)} 行程`}
-        />
-      )}
+      {page === 'today' &&
+        todayDay &&
+        todayView === 'level' && (
+          <LevelGuidePage
+            day={todayDay}
+            onBack={closeTodayLevel}
+            backLabel={`返回 ${formatDate(todayDay.date)} 行程`}
+          />
+        )}
 
-      {/* OVERVIEW LIST */}
+      {/* OVERVIEW */}
 
-      {page === 'overview' && overviewView === 'list' && (
-        <OverviewPage
-          days={overviewDays}
-          chapters={chapters}
-          activeChapter={overviewChapter}
-          onChapterChange={setOverviewChapter}
-          onOpenDay={openOverviewDay}
-        />
-      )}
-
-      {/* OVERVIEW DETAIL */}
+      {page === 'overview' &&
+        overviewView === 'list' && (
+          <OverviewPage
+            days={overviewDays}
+            chapters={chapters}
+            activeChapter={overviewChapter}
+            onChapterChange={setOverviewChapter}
+            onOpenDay={openOverviewDay}
+          />
+        )}
 
       {page === 'overview' &&
         overviewView === 'detail' &&
@@ -478,7 +502,10 @@ export default function TravelApp({ days }: { days: TravelDay[] }) {
         overviewDayView === 'detail' && (
           <div>
             <div className="subPageHeader">
-              <button className="backButton" onClick={backToOverview}>
+              <button
+                className="backButton"
+                onClick={backToOverview}
+              >
                 <BackIcon />
                 返回行程總覽
               </button>
@@ -491,8 +518,6 @@ export default function TravelApp({ days }: { days: TravelDay[] }) {
             />
           </div>
         )}
-
-      {/* OVERVIEW LEVEL GUIDE */}
 
       {page === 'overview' &&
         overviewView === 'detail' &&
@@ -520,12 +545,17 @@ export default function TravelApp({ days }: { days: TravelDay[] }) {
 
       {/* NAV */}
 
-      <nav className="bottomNav" aria-label="主要導覽">
+      <nav
+        className="bottomNav"
+        aria-label="主要導覽"
+      >
         {navItems.map((item) => (
           <a
             key={item.id}
             href={`#${item.id}`}
-            className={page === item.id ? 'active' : ''}
+            className={
+              page === item.id ? 'active' : ''
+            }
             onClick={(event) => {
               event.preventDefault();
               switchPage(item.id);
@@ -559,6 +589,16 @@ function SiteHeader() {
 
 /* =========================================================
    DAY DETAIL
+
+   新結構：
+
+   1. 日期 / 主題
+   2. LEVEL 穿搭入口
+   3. 天氣
+   4. HERO
+   5. 行程
+
+   DAILY WARDROBE 已完全移除
 ========================================================= */
 
 function DayDetail({
@@ -572,6 +612,9 @@ function DayDetail({
 }) {
   return (
     <div className="todayPage">
+
+      {/* HERO INFO */}
+
       <section className="todayHero">
         <p className="dateLabel">
           {formatDate(day.date)} ・ {getWeekday(day.date)}
@@ -579,19 +622,29 @@ function DayDetail({
 
         <h1>{day.title}</h1>
 
-        <p className="chapterLabel">{day.chapter}</p>
+        <p className="chapterLabel">
+          {day.chapter}
+        </p>
 
-        <button className="levelButton" onClick={onOpenLevel}>
+        {/* 穿搭唯一入口 */}
+
+        <button
+          className="levelButton"
+          onClick={onOpenLevel}
+        >
           <div>
             <span>建議穿著</span>
 
             <strong>
-              LEVEL {safeLevel(day.level)}｜{levelName(day.level)}
+              LEVEL {safeLevel(day.level)}
+              ｜{levelName(day.level)}
             </strong>
           </div>
 
           <ArrowIcon />
         </button>
+
+        {/* WEATHER */}
 
         <div className="weatherGrid">
           <div>
@@ -605,99 +658,99 @@ function DayDetail({
           </div>
         </div>
 
-        <p className="weatherText">{day.weather}</p>
+        <p className="weatherText">
+          {day.weather}
+        </p>
       </section>
 
-      {day.heroImage && (
-        <figure className="destinationHero">
-          <img
-            src={day.heroImage}
-            alt={`${day.title} 精選旅遊景色`}
-          />
+      {/* =====================================================
+          DAILY HERO IMAGE
 
-          <figcaption>
-            <span>
-              {mode === 'today'
-                ? "TODAY'S DESTINATION"
-                : 'DESTINATION'}
-            </span>
+          有 heroImage → 顯示圖片
+          沒有 heroImage → 保留完整 Hero 位置
+      ===================================================== */}
 
-            <strong>{day.title}</strong>
-          </figcaption>
-        </figure>
-      )}
+      <figure className="destinationHero">
+        {day.heroImage ? (
+          <>
+            <img
+              src={day.heroImage}
+              alt={`${day.title} 當日精選景色`}
+            />
 
-      <section className="todayOutfit">
-        <p className="eyebrow">DAILY WARDROBE</p>
-        <h2>今天怎麼穿</h2>
+            <figcaption>
+              <span>
+                {mode === 'today'
+                  ? "TODAY'S HIGHLIGHT"
+                  : 'DAY HIGHLIGHT'}
+              </span>
 
-        <div className="outfitRows">
-          <div>
-            <b>男生</b>
-            <span>{day.maleOutfit}</span>
+              <strong>{day.title}</strong>
+            </figcaption>
+          </>
+        ) : (
+          <div className="heroPlaceholder">
+            <ImageIcon />
+
+            <div>
+              <span>TODAY'S HIGHLIGHT</span>
+
+              <strong>
+                當日精選景色
+              </strong>
+
+              <p>
+                {formatDate(day.date)} ・ {day.title}
+              </p>
+            </div>
           </div>
-
-          <div>
-            <b>女生</b>
-            <span>{day.femaleOutfit}</span>
-          </div>
-
-          <div>
-            <b>鞋款</b>
-            <span>{day.shoes}</span>
-          </div>
-
-          <div>
-            <b>記得帶</b>
-            <span>{day.outerLayer}</span>
-          </div>
-        </div>
-
-        {day.notice && (
-          <p className="notice">{day.notice}</p>
         )}
+      </figure>
 
-        <button className="primaryButton" onClick={onOpenLevel}>
-          <span>
-            查看 LEVEL {safeLevel(day.level)} 完整穿搭指南
-          </span>
-          <ArrowIcon />
-        </button>
-      </section>
+      {/* DAILY JOURNEY */}
 
       <section className="routeSection">
-        <p className="eyebrow">DAILY JOURNEY</p>
+        <p className="eyebrow">
+          DAILY JOURNEY
+        </p>
+
         <h2>當日行程</h2>
 
         <div className="timeline">
-          {day.itinerary.map((item, index) => (
-            <div
-              className="stop"
-              key={`${item.time}-${item.place}-${index}`}
-            >
-              <time>{item.time}</time>
+          {day.itinerary.map(
+            (item, index) => (
+              <div
+                className="stop"
+                key={`${item.time}-${item.place}-${index}`}
+              >
+                <time>
+                  {item.time}
+                </time>
 
-              <div>
-                <b>{item.place}</b>
+                <div>
+                  <b>{item.place}</b>
 
-                {item.description && (
-                  <p>{item.description}</p>
-                )}
+                  {item.description && (
+                    <p>
+                      {item.description}
+                    </p>
+                  )}
 
-                {item.mapUrl && (
-                  <a
-                    className="mapLink"
-                    href={item.mapUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <MapIcon />
-                    Google Maps
-                  </a>
-                )}
+                  {item.mapUrl && (
+                    <a
+                      className="mapLink"
+                      href={item.mapUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <MapIcon />
+                      Google Maps
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          )}
         </div>
       </section>
     </div>
@@ -722,42 +775,66 @@ function LevelGuidePage({
 
   return (
     <div className="levelGuidePage">
+
       <div className="subPageHeader">
-        <button className="backButton" onClick={onBack}>
+        <button
+          className="backButton"
+          onClick={onBack}
+        >
           <BackIcon />
           {backLabel}
         </button>
       </div>
 
-      <section className="levelGuideHero">
-        <p className="eyebrow lightEyebrow">WARDROBE LEVEL</p>
+      {/* LEVEL HERO */}
 
-        <span className="levelNumber">LEVEL {level}</span>
+      <section className="levelGuideHero">
+        <p className="eyebrow lightEyebrow">
+          WARDROBE LEVEL
+        </p>
+
+        <span className="levelNumber">
+          LEVEL {level}
+        </span>
 
         <h1>{guide.title}</h1>
 
-        <p className="levelTemperature">{guide.temperature}</p>
+        <p className="levelTemperature">
+          {guide.temperature}
+        </p>
 
-        <p className="levelSummary">{guide.summary}</p>
+        <p className="levelSummary">
+          {guide.summary}
+        </p>
 
         <div className="dayContext">
           <span>套用到這一天</span>
 
           <strong>
-            {formatDate(day.date)} ・ {day.title}
+            {formatDate(day.date)}
+            {' ・ '}
+            {day.title}
           </strong>
 
           <small>
-            白天 {day.dayTemp} ／ 早晚 {day.nightTemp}
+            白天 {day.dayTemp}
+            {' ／ '}
+            早晚 {day.nightTemp}
           </small>
         </div>
       </section>
 
+      {/* TIME OF DAY */}
+
       <section className="levelContent">
-        <p className="eyebrow">HOW TO DRESS</p>
+        <p className="eyebrow">
+          HOW TO DRESS
+        </p>
+
         <h2>早晚怎麼穿</h2>
 
         <div className="timeWearGrid">
+
           <article>
             <span>早上</span>
             <strong>MORNING</strong>
@@ -775,67 +852,105 @@ function LevelGuidePage({
             <strong>EVENING</strong>
             <p>{guide.evening}</p>
           </article>
+
         </div>
       </section>
 
+      {/* LAYERS */}
+
       <section className="layerSection">
-        <p className="eyebrow">LAYERING SYSTEM</p>
+        <p className="eyebrow">
+          LAYERING SYSTEM
+        </p>
+
         <h2>分層穿搭</h2>
 
         <div className="layerList">
+
           <div>
             <span>01</span>
+
             <div>
-              <b>底層 Base Layer</b>
+              <b>
+                底層 Base Layer
+              </b>
+
               <p>{guide.base}</p>
             </div>
           </div>
 
           <div>
             <span>02</span>
+
             <div>
-              <b>中層 Mid Layer</b>
+              <b>
+                中層 Mid Layer
+              </b>
+
               <p>{guide.mid}</p>
             </div>
           </div>
 
           <div>
             <span>03</span>
+
             <div>
-              <b>外層 Outer Layer</b>
+              <b>
+                外層 Outer Layer
+              </b>
+
               <p>{guide.outer}</p>
             </div>
           </div>
 
           <div>
             <span>04</span>
+
             <div>
-              <b>下身 Bottom</b>
+              <b>
+                下身 Bottom
+              </b>
+
               <p>{guide.bottom}</p>
             </div>
           </div>
 
           <div>
             <span>05</span>
+
             <div>
-              <b>鞋款 Shoes</b>
+              <b>
+                鞋款 Shoes
+              </b>
+
               <p>{guide.shoes}</p>
             </div>
           </div>
+
         </div>
       </section>
 
+      {/* BRING */}
+
       <section className="bringSection">
-        <p className="eyebrow">DON'T FORGET</p>
+        <p className="eyebrow">
+          DON'T FORGET
+        </p>
+
         <h2>記得帶</h2>
 
         <div className="bringCard">
           <BagIcon />
-          <p>{guide.bring}</p>
+
+          <p>
+            {guide.bring}
+          </p>
         </div>
 
         {day.notice && (
-          <p className="notice">{day.notice}</p>
+          <p className="notice">
+            {day.notice}
+          </p>
         )}
       </section>
     </div>
@@ -861,13 +976,23 @@ function OverviewPage({
 }) {
   return (
     <section className="contentPage">
-      <p className="eyebrow">TRIP OVERVIEW</p>
+      <p className="eyebrow">
+        TRIP OVERVIEW
+      </p>
+
       <h2>行程總覽</h2>
 
       <div className="chapterTabs">
+
         <button
-          className={activeChapter === '全部' ? 'active' : ''}
-          onClick={() => onChapterChange('全部')}
+          className={
+            activeChapter === '全部'
+              ? 'active'
+              : ''
+          }
+          onClick={() =>
+            onChapterChange('全部')
+          }
         >
           全部
         </button>
@@ -875,19 +1000,29 @@ function OverviewPage({
         {chapters.map((chapter) => (
           <button
             key={chapter}
-            className={activeChapter === chapter ? 'active' : ''}
-            onClick={() => onChapterChange(chapter)}
+            className={
+              activeChapter === chapter
+                ? 'active'
+                : ''
+            }
+            onClick={() =>
+              onChapterChange(chapter)
+            }
           >
             {chapter}
           </button>
         ))}
+
       </div>
 
       <div className="dayList">
+
         {days.map((day) => (
           <button
             key={day.date}
-            onClick={() => onOpenDay(day.date)}
+            onClick={() =>
+              onOpenDay(day.date)
+            }
           >
             <span>
               {formatDate(day.date)}
@@ -895,11 +1030,16 @@ function OverviewPage({
               {getWeekday(day.date)}
             </span>
 
-            <strong>{day.title}</strong>
+            <strong>
+              {day.title}
+            </strong>
 
-            <small>{day.chapter}</small>
+            <small>
+              {day.chapter}
+            </small>
           </button>
         ))}
+
       </div>
     </section>
   );
@@ -912,13 +1052,18 @@ function OverviewPage({
 function DocumentsPage() {
   return (
     <section className="contentPage">
-      <p className="eyebrow">TRAVEL DOCUMENTS</p>
+      <p className="eyebrow">
+        TRAVEL DOCUMENTS
+      </p>
+
       <h2>重要檔案</h2>
 
       <div className="emptyCard">
         <FileIcon />
 
-        <strong>旅行文件</strong>
+        <strong>
+          旅行文件
+        </strong>
 
         <p>
           航班、住宿、租車、景點、保險等重要憑證與下載連結，
@@ -940,16 +1085,24 @@ function PackingPage({
   checkedItems: string[];
   onToggle: (item: string) => void;
 }) {
-  const completed = checkedItems.length;
-  const total = packingItems.length;
+  const completed =
+    checkedItems.length;
+
+  const total =
+    packingItems.length;
 
   return (
     <section className="contentPage">
-      <p className="eyebrow">PACKING CHECKLIST</p>
+      <p className="eyebrow">
+        PACKING CHECKLIST
+      </p>
+
       <h2>行李清單</h2>
 
       <div className="packingProgress">
-        <span>準備進度</span>
+        <span>
+          準備進度
+        </span>
 
         <strong>
           {completed} / {total}
@@ -957,17 +1110,27 @@ function PackingPage({
       </div>
 
       <div className="checklistPreview">
+
         {packingItems.map((item) => (
           <label key={item}>
+
             <input
               type="checkbox"
-              checked={checkedItems.includes(item)}
-              onChange={() => onToggle(item)}
+              checked={
+                checkedItems.includes(item)
+              }
+              onChange={() =>
+                onToggle(item)
+              }
             />
 
-            <span>{item}</span>
+            <span>
+              {item}
+            </span>
+
           </label>
         ))}
+
       </div>
     </section>
   );
