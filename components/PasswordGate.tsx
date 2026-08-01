@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-const PASSWORD = 'Canada2026';
+const PASSWORD = '77168';
 
 export default function PasswordGate({
   children,
@@ -11,10 +11,15 @@ export default function PasswordGate({
 }) {
   const [authorized, setAuthorized] = useState(false);
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (localStorage.getItem('travel-auth') === 'true') {
       setAuthorized(true);
+    } else {
+      setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, []);
 
@@ -25,7 +30,12 @@ export default function PasswordGate({
       return;
     }
 
-    alert('密碼錯誤');
+    setError(true);
+    setPassword('');
+
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50);
   }
 
   if (authorized) {
@@ -33,22 +43,56 @@ export default function PasswordGate({
   }
 
   return (
-    <main>
-      <h1>Canada 2026</h1>
+    <main className="loginPage">
+      <div className="loginOverlay" />
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') login();
-        }}
-      />
+      <div className="loginCard">
 
-      <button onClick={login}>
-        Continue
-      </button>
+        <p className="loginEyebrow">
+          FAMILY TRAVEL GUIDE
+        </p>
+
+        <h1 className="loginTitle">
+          CANADA
+          <br />
+          2026
+        </h1>
+
+        <p className="loginSubtitle">
+          August 13 — August 28
+        </p>
+
+        <input
+          ref={inputRef}
+          className="loginInput"
+          type="password"
+          placeholder="Travel Access Code"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            setError(false);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              login();
+            }
+          }}
+        />
+
+        <button
+          className="loginButton"
+          onClick={login}
+        >
+          Continue →
+        </button>
+
+        {error && (
+          <p className="loginError">
+            Access code incorrect. Please try again.
+          </p>
+        )}
+
+      </div>
     </main>
   );
 }
