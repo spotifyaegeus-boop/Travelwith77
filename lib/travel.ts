@@ -486,6 +486,7 @@ export async function getTravelData(): Promise<
 
           heroImage: getValue(
             row,
+            '主圖網址',
             'Hero 圖',
             'Hero圖片',
             'Hero 圖片',
@@ -494,6 +495,7 @@ export async function getTravelData(): Promise<
 
           maleImage: getValue(
             row,
+            '男生穿搭圖網址',
             '男生圖片',
             '男生穿搭圖片',
             'maleImage'
@@ -502,6 +504,7 @@ export async function getTravelData(): Promise<
           femaleImage: getValue(
             row,
             '女生圖片',
+            '女生穿搭圖網址',
             '女生穿搭圖片',
             'femaleImage'
           ),
