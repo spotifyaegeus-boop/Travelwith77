@@ -1,4 +1,5 @@
 import TravelApp from '../components/TravelApp';
+import PasswordGate from '../components/PasswordGate';
 
 import {
   getTravelData,
@@ -13,11 +14,13 @@ export default async function Page() {
     getPackingItems(),
   ]);
 
-  return (
+return (
+  <PasswordGate>
     <TravelApp
       days={days}
       documents={documents}
       packingItems={packingItems}
     />
-  );
+  </PasswordGate>
+);
 }
