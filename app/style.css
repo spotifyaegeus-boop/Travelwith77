@@ -1545,8 +1545,8 @@ h2 {
   overflow:hidden;
 
   background:
-    url("https://res.cloudinary.com/nc4uhdl3/image/upload/v1785571564/images_3_abzduz.jpg")
-    center/cover no-repeat;
+url("https://res.cloudinary.com/nc4uhdl3/image/upload/v1785602907/Moraine-Lake2025_ezztvz.jpg")
+center 35% / cover no-repeat;
 }
 
 .loginOverlay{
@@ -1583,6 +1583,7 @@ h2 {
       0 30px 80px rgba(0,0,0,.28);
 
   color:white;
+   margin-top:60px;
 
 }
 
@@ -1609,6 +1610,8 @@ h2 {
   line-height:.95;
 
   color:white;
+   
+   letter-spacing:.08em;
 
 }
 
