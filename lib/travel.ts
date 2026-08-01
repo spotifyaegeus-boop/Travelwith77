@@ -1,7 +1,818 @@
-import {parseCSV} from './csv'; import type {TravelDay} from '../types/travel';
-const fallback:TravelDay[]=[
-{date:'2026/8/13',chapter:'溫哥華',title:'抵達溫哥華・English Bay 夕陽',dayTemp:'20–25°C',nightTemp:'13–17°C',level:1,weather:'舒適夏季、海風',maleOutfit:'T 恤＋直筒輕薄長褲＋薄襯衫',femaleOutfit:'T 恤／背心＋寬褲＋薄針織',shoes:'生活休閒鞋',outerLayer:'薄襯衫／Cardigan',notice:'長程移動日，晚上以輕鬆散步為主。',heroImage:'',maleImage:'',femaleImage:'',published:true,itinerary:[{time:'17:55',place:'溫哥華國際機場',description:'入境後搭 Canada Line 前往市區',type:'交通',priority:'固定'},{time:'20:00',place:'English Bay Beach',description:'海灘散步與夕陽',type:'遊玩',priority:'精選'}]},
-{date:'2026/8/24',chapter:'班夫＆洛磯山脈',title:'露易絲湖＆夢蓮湖',dayTemp:'12–18°C',nightTemp:'3–8°C',level:4,weather:'清晨冷、湖邊有風',maleOutfit:'長袖＋刷毛＋輕羽絨＋長褲',femaleOutfit:'長袖＋刷毛＋輕羽絨＋長褲',shoes:'Trail／健行鞋',outerLayer:'輕羽絨',notice:'06:00 抵達 Park & Ride；午後可逐層脫。',heroImage:'',maleImage:'',femaleImage:'',published:true,itinerary:[{time:'06:00',place:'Lake Louise Park & Ride',description:'接駁車集合',type:'交通',priority:'固定'},{time:'早上',place:'Lake Louise',description:'湖畔散步',type:'遊玩',priority:'精選'},{time:'下午',place:'Moraine Lake',description:'夢蓮湖',type:'遊玩',priority:'精選'}]},
-{date:'2026/8/25',chapter:'班夫＆洛磯山脈',title:'哥倫比亞冰原・全程最冷',dayTemp:'約 0–10°C',nightTemp:'高海拔強風',level:5,weather:'高海拔、強風、快速變化',maleOutfit:'底層＋刷毛＋羽絨＋防風防水 Shell',femaleOutfit:'底層＋刷毛＋羽絨＋防風防水 Shell',shoes:'包覆式防滑鞋',outerLayer:'羽絨＋Shell',notice:'提前加滿油、下載離線地圖。',heroImage:'',maleImage:'',femaleImage:'',published:true,itinerary:[{time:'上午',place:'Bow Lake',description:'冰原大道第一站',type:'遊玩',priority:'精選'},{time:'上午',place:'Peyto Lake',description:'觀景台',type:'遊玩',priority:'精選'},{time:'下午',place:'Columbia Icefield',description:'冰原探險與 Skywalk',type:'遊玩',priority:'固定'}]}
+import { parseCSV } from './csv';
+
+import type {
+  TravelDay,
+  TravelDocument,
+  PackingItem,
+  ItineraryItem,
+} from '../types/travel';
+
+/* =========================================================
+   FALLBACK
+========================================================= */
+
+const fallback: TravelDay[] = [
+  {
+    date: '2026/8/13',
+    chapter: '溫哥華',
+    title: '抵達溫哥華・海邊夕陽',
+
+    dayTemp: '20–25°C',
+    nightTemp: '13–17°C',
+    level: 1,
+    weather: '舒適偏暖｜夏裝即可',
+
+    maleOutfit: 'T 恤＋直筒輕薄長褲＋薄襯衫',
+    femaleOutfit: 'T 恤／背心＋寬褲＋薄針織',
+
+    shoes: '生活休閒鞋',
+    outerLayer: '薄襯衫／Cardigan',
+
+    notice: '長程移動日，傍晚海邊可能較涼。',
+
+    heroImage: '',
+    maleImage: '',
+    femaleImage: '',
+
+    published: true,
+    itinerary: [],
+  },
 ];
-export async function getTravelData():Promise<TravelDay[]>{const url=process.env.GOOGLE_SHEET_CSV_URL;if(!url)return fallback;try{const res=await fetch(url,{next:{revalidate:60}});if(!res.ok)throw new Error('sheet');const rows=parseCSV(await res.text());const h=rows.shift()||[];const ix=(n:string)=>h.indexOf(n);const map=new Map<string,TravelDay>();for(const r of rows){if((r[ix('status')]||'').trim()!=='發布')continue;const date=r[ix('date')];if(!date)continue;if(!map.has(date))map.set(date,{date,chapter:r[ix('chapter')],title:r[ix('title')],dayTemp:r[ix('dayTemp')],nightTemp:r[ix('nightTemp')],level:Number(r[ix('level')]||1),weather:r[ix('weather')],maleOutfit:r[ix('maleOutfit')],femaleOutfit:r[ix('femaleOutfit')],shoes:r[ix('shoes')],outerLayer:r[ix('outerLayer')],notice:r[ix('notice')],heroImage:r[ix('heroImage')],maleImage:r[ix('maleImage')],femaleImage:r[ix('femaleImage')],published:true,itinerary:[]});map.get(date)!.itinerary.push({time:r[ix('time')],place:r[ix('place')],description:r[ix('description')],type:r[ix('type')],priority:r[ix('priority')],mapUrl:r[ix('mapUrl')]})}return [...map.values()].length?[...map.values()]:fallback}catch{return fallback}}
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function clean(value: string | undefined): string {
+  return (value ?? '').trim();
+}
+
+function createTable(rows: string[][]) {
+  const headers = (rows[0] ?? []).map(clean);
+
+  const getIndex = (...names: string[]): number => {
+    for (const name of names) {
+      const index = headers.indexOf(name);
+
+      if (index !== -1) {
+        return index;
+      }
+    }
+
+    return -1;
+  };
+
+  const getValue = (
+    row: string[],
+    ...names: string[]
+  ): string => {
+    const index = getIndex(...names);
+
+    if (index === -1) {
+      return '';
+    }
+
+    return clean(row[index]);
+  };
+
+  return {
+    headers,
+    getValue,
+  };
+}
+
+/*
+  支援：
+
+  2026/08/13
+  2026/8/13
+  2026-08-13
+  8/13
+  08/13
+
+  統一轉成：
+
+  8/13
+*/
+function normalizeDate(value: string): string {
+  const cleaned = clean(value);
+
+  if (!cleaned) {
+    return '';
+  }
+
+  const normalized = cleaned
+    .replace(/-/g, '/')
+    .replace(/\./g, '/');
+
+  const parts = normalized
+    .split('/')
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length === 3) {
+    const month = Number(parts[1]);
+    const day = Number(parts[2]);
+
+    if (
+      Number.isFinite(month) &&
+      Number.isFinite(day)
+    ) {
+      return `${month}/${day}`;
+    }
+  }
+
+  if (parts.length === 2) {
+    const month = Number(parts[0]);
+    const day = Number(parts[1]);
+
+    if (
+      Number.isFinite(month) &&
+      Number.isFinite(day)
+    ) {
+      return `${month}/${day}`;
+    }
+  }
+
+  return normalized;
+}
+
+/*
+  Google Sheet boolean 欄位轉換。
+
+  以下都視為 true：
+
+  是
+  true
+  1
+  yes
+  y
+  ✓
+*/
+function toBoolean(value: string): boolean {
+  const normalized = clean(value).toLowerCase();
+
+  return [
+    '是',
+    'true',
+    '1',
+    'yes',
+    'y',
+    '✓',
+    'v',
+  ].includes(normalized);
+}
+
+async function fetchCSV(
+  url: string
+): Promise<string[][]> {
+  const response = await fetch(url, {
+    next: {
+      revalidate: 60,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Google Sheet request failed: ${response.status}`
+    );
+  }
+
+  const text = await response.text();
+
+  const rows = parseCSV(text);
+
+  if (!rows || rows.length < 2) {
+    throw new Error(
+      'Google Sheet CSV has no data'
+    );
+  }
+
+  return rows;
+}
+
+/* =========================================================
+   ITINERARY
+========================================================= */
+
+async function getItineraryMap(): Promise<
+  Map<string, ItineraryItem[]>
+> {
+  const url =
+    process.env.GOOGLE_SHEET_ITINERARY_CSV_URL;
+
+  const map =
+    new Map<string, ItineraryItem[]>();
+
+  if (!url) {
+    console.warn(
+      'GOOGLE_SHEET_ITINERARY_CSV_URL is missing'
+    );
+
+    return map;
+  }
+
+  try {
+    const rows = await fetchCSV(url);
+
+    const { getValue } =
+      createTable(rows);
+
+    for (const row of rows.slice(1)) {
+      const status = getValue(
+        row,
+        '狀態',
+        'status'
+      );
+
+      if (status !== '發布') {
+        continue;
+      }
+
+      const rawDate = getValue(
+        row,
+        '日期',
+        'date'
+      );
+
+      const dateKey =
+        normalizeDate(rawDate);
+
+      if (!dateKey) {
+        continue;
+      }
+
+      const startTime = getValue(
+        row,
+        '開始時間',
+        '時間',
+        'time'
+      );
+
+      const endTime = getValue(
+        row,
+        '結束時間',
+        'endTime'
+      );
+
+      const place = getValue(
+        row,
+        '景點名稱',
+        '地點',
+        'place'
+      );
+
+      const description = getValue(
+        row,
+        '中文介紹',
+        '說明',
+        'description'
+      );
+
+      const type = getValue(
+        row,
+        '類型',
+        'type'
+      );
+
+      const priority = getValue(
+        row,
+        '重要度',
+        '優先度',
+        'priority'
+      );
+
+      const mapUrl = getValue(
+        row,
+        '地圖連結',
+        'Google Maps',
+        'mapUrl'
+      );
+
+      const rawDocumentIds = getValue(
+        row,
+        '文件ID',
+        '文件 ID',
+        'documentIds'
+      );
+
+      const documentIds =
+        rawDocumentIds
+          ? rawDocumentIds
+              .split(/[,，、]/)
+              .map((id) => id.trim())
+              .filter(Boolean)
+          : undefined;
+
+      let time = startTime;
+
+      if (startTime && endTime) {
+        time =
+          `${startTime}–${endTime}`;
+      }
+
+      const item: ItineraryItem = {
+        time,
+        place,
+        description,
+        type,
+        priority,
+
+        mapUrl:
+          mapUrl || undefined,
+
+        documentIds:
+          documentIds?.length
+            ? documentIds
+            : undefined,
+      };
+
+      if (!map.has(dateKey)) {
+        map.set(dateKey, []);
+      }
+
+      map.get(dateKey)!.push(item);
+    }
+
+    console.log(
+      `Loaded itinerary for ${map.size} travel days`
+    );
+
+    return map;
+  } catch (error) {
+    console.error(
+      'Failed to load Itinerary CSV:',
+      error
+    );
+
+    return map;
+  }
+}
+
+/* =========================================================
+   DAYS
+========================================================= */
+
+export async function getTravelData(): Promise<
+  TravelDay[]
+> {
+  const daysUrl =
+    process.env.GOOGLE_SHEET_CSV_URL;
+
+  if (!daysUrl) {
+    console.error(
+      'GOOGLE_SHEET_CSV_URL is missing'
+    );
+
+    return fallback;
+  }
+
+  try {
+    const [rows, itineraryMap] =
+      await Promise.all([
+        fetchCSV(daysUrl),
+        getItineraryMap(),
+      ]);
+
+    const { getValue } =
+      createTable(rows);
+
+    const days: TravelDay[] = rows
+      .slice(1)
+
+      .filter((row) => {
+        const status = getValue(
+          row,
+          '狀態',
+          'status'
+        );
+
+        return status === '發布';
+      })
+
+      .map((row) => {
+        const rawLevel = Number(
+          getValue(
+            row,
+            '厚度等級',
+            '厚度',
+            'level'
+          ) || '1'
+        );
+
+        const level =
+          Number.isFinite(rawLevel) &&
+          rawLevel >= 1 &&
+          rawLevel <= 5
+            ? rawLevel
+            : 1;
+
+        const date = getValue(
+          row,
+          '日期',
+          'date'
+        );
+
+        const dateKey =
+          normalizeDate(date);
+
+        return {
+          date,
+
+          chapter: getValue(
+            row,
+            '篇章',
+            'chapter'
+          ),
+
+          title: getValue(
+            row,
+            '每日主題',
+            'title'
+          ),
+
+          dayTemp: getValue(
+            row,
+            '白天氣溫',
+            'dayTemp'
+          ),
+
+          nightTemp: getValue(
+            row,
+            '早晚氣溫',
+            'nightTemp'
+          ),
+
+          level,
+
+          weather: getValue(
+            row,
+            '厚度結論',
+            '天氣說明',
+            'weather'
+          ),
+
+          maleOutfit: getValue(
+            row,
+            '男生穿搭',
+            'maleOutfit'
+          ),
+
+          femaleOutfit: getValue(
+            row,
+            '女生穿搭',
+            'femaleOutfit'
+          ),
+
+          shoes: getValue(
+            row,
+            '鞋款',
+            'shoes'
+          ),
+
+          outerLayer: getValue(
+            row,
+            '外層',
+            '要帶的外層',
+            'outerLayer'
+          ),
+
+          notice: getValue(
+            row,
+            '提醒',
+            '注意事項',
+            'notice'
+          ),
+
+          heroImage: getValue(
+            row,
+            '主圖網址',
+            'Hero 圖',
+            'Hero圖片',
+            'Hero 圖片',
+            'heroImage'
+          ),
+
+          maleImage: getValue(
+            row,
+            '男生穿搭圖網址',
+            '男生圖片',
+            '男生穿搭圖片',
+            'maleImage'
+          ),
+
+          femaleImage: getValue(
+            row,
+            '女生圖片',
+            '女生穿搭圖網址',
+            '女生穿搭圖片',
+            'femaleImage'
+          ),
+
+          published: true,
+
+          itinerary:
+            itineraryMap.get(dateKey) ??
+            [],
+        };
+      })
+
+      .filter((day) =>
+        Boolean(day.date)
+      );
+
+    console.log(
+      `Loaded ${days.length} published travel days`
+    );
+
+    if (days.length === 0) {
+      console.warn(
+        'No published Days found. Using fallback.'
+      );
+
+      return fallback;
+    }
+
+    return days;
+  } catch (error) {
+    console.error(
+      'Failed to load travel data:',
+      error
+    );
+
+    return fallback;
+  }
+}
+
+/* =========================================================
+   DOCUMENTS
+========================================================= */
+
+export async function getTravelDocuments(): Promise<
+  TravelDocument[]
+> {
+  const url =
+    process.env.GOOGLE_SHEET_DOCUMENTS_CSV_URL;
+
+  if (!url) {
+    console.warn(
+      'GOOGLE_SHEET_DOCUMENTS_CSV_URL is missing'
+    );
+
+    return [];
+  }
+
+  try {
+    const rows = await fetchCSV(url);
+
+    const { getValue } =
+      createTable(rows);
+
+    const documents: TravelDocument[] =
+      rows
+        .slice(1)
+
+        .filter((row) => {
+          const status = getValue(
+            row,
+            '狀態',
+            'status'
+          );
+
+          return status === '發布';
+        })
+
+        .map((row) => {
+          const id = getValue(
+            row,
+            'ID',
+            'id'
+          );
+
+          const rawCategory =
+            getValue(
+              row,
+              '分類',
+              'category'
+            );
+
+          const allowedCategories:
+            TravelDocument['category'][] =
+            [
+              '航班',
+              '住宿',
+              '租車',
+              '景點',
+              '保險',
+              '其他',
+            ];
+
+          const category:
+            TravelDocument['category'] =
+            allowedCategories.includes(
+              rawCategory as TravelDocument['category']
+            )
+              ? (rawCategory as TravelDocument['category'])
+              : '其他';
+
+          const name = getValue(
+            row,
+            '文件名稱',
+            'name'
+          );
+
+          const description =
+            getValue(
+              row,
+              '說明',
+              'description'
+            );
+
+          const rawDate = getValue(
+            row,
+            '日期',
+            'date'
+          );
+
+          const url = getValue(
+            row,
+            '檔案連結',
+            '文件連結',
+            'url'
+          );
+
+          const document:
+            TravelDocument = {
+            id,
+            category,
+            name,
+
+            description:
+              description || undefined,
+
+            date:
+              rawDate || undefined,
+
+            url,
+
+            published: true,
+          };
+
+          return document;
+        })
+
+        .filter(
+          (document) =>
+            Boolean(document.id) &&
+            Boolean(document.name)
+        );
+
+    console.log(
+      `Loaded ${documents.length} published documents`
+    );
+
+    return documents;
+  } catch (error) {
+    console.error(
+      'Failed to load Documents CSV:',
+      error
+    );
+
+    return [];
+  }
+}
+
+/* =========================================================
+   PACKING
+========================================================= */
+
+export async function getPackingItems(): Promise<
+  PackingItem[]
+> {
+  const url =
+    process.env.GOOGLE_SHEET_PACKING_CSV_URL;
+
+  if (!url) {
+    console.warn(
+      'GOOGLE_SHEET_PACKING_CSV_URL is missing'
+    );
+
+    return [];
+  }
+
+  try {
+    const rows = await fetchCSV(url);
+
+    const { getValue } =
+      createTable(rows);
+
+    const items: PackingItem[] = rows
+      .slice(1)
+
+      /* 只顯示狀態為「發布」的項目 */
+      .filter((row) => {
+        const status = getValue(
+          row,
+          '狀態',
+          'status'
+        );
+
+        return status === '發布';
+      })
+
+      .map((row) => {
+        const id = getValue(
+          row,
+          'ID',
+          'id'
+        );
+
+        const category = getValue(
+          row,
+          '分類',
+          'category'
+        );
+
+        const name = getValue(
+          row,
+          '項目',
+          '項目名稱',
+          'name'
+        );
+
+        const quantity = getValue(
+          row,
+          '建議數量',
+          '數量',
+          'quantity'
+        );
+
+        const description = getValue(
+          row,
+          '用途',
+          '說明',
+          'description'
+        );
+
+        const importantRaw = getValue(
+          row,
+          '重要',
+          'important'
+        );
+
+        const defaultCompletedRaw =
+          getValue(
+            row,
+            '預設完成',
+            'defaultCompleted'
+          );
+
+        const item: PackingItem = {
+          id,
+          category,
+          name,
+
+          quantity:
+            quantity || undefined,
+
+          description:
+            description || undefined,
+
+          important:
+            toBoolean(importantRaw),
+
+          defaultCompleted:
+            toBoolean(
+              defaultCompletedRaw
+            ),
+
+          published: true,
+        };
+
+        return item;
+      })
+
+      /*
+        避免 Sheet 裡空白列
+        被網站當成行李項目。
+      */
+      .filter(
+        (item) =>
+          Boolean(item.id) &&
+          Boolean(item.name)
+      );
+
+    console.log(
+      `Loaded ${items.length} published packing items`
+    );
+
+    return items;
+  } catch (error) {
+    console.error(
+      'Failed to load Packing CSV:',
+      error
+    );
+
+    return [];
+  }
+}

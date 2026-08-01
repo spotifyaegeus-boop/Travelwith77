@@ -11,3 +11,5 @@
 - `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`: Cloudinary cloud name（預留；目前圖片欄可直接放 Cloudinary delivery URL）
 
 沒有設定 Sheet 時會顯示 fallback demo，避免網站壞掉。
+## V3 Development
+V3 travel website redesign.

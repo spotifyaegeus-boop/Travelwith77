@@ -1,1 +1,1696 @@
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f1ede4;color:#252825;font-family:"Noto Sans TC",system-ui,sans-serif}main{max-width:1240px;margin:auto;background:#f7f4ed}.hero{min-height:65vh;padding:clamp(28px,7vw,88px);display:flex;align-items:end;background:#2f4539;color:#f8f4ea}.hero h1{font-family:Georgia,serif;font-size:clamp(70px,14vw,170px);line-height:.76;letter-spacing:-.07em;margin:28px 0}.hero p{font-size:18px}section{padding:clamp(48px,7vw,90px) clamp(18px,5vw,64px)}.eyebrow{letter-spacing:.2em;font-size:12px;color:#6c756d}h2{font-family:Georgia,"Noto Serif TC",serif;font-size:clamp(38px,6vw,76px);font-weight:500;margin:12px 0 30px}.tabs,.subtabs{display:flex;gap:8px;overflow:auto;padding-bottom:10px}.tabs button,.subtabs button{white-space:nowrap;border:1px solid #aaa69c;background:transparent;padding:12px 18px;min-height:44px}.tabs .active{background:#2f4539;color:white;border-color:#2f4539}.subtabs .active{background:#aab9c4;border-color:#aab9c4}.day{margin-top:24px;background:#fbfaf6;border-top:5px solid #2f4539;padding:clamp(20px,4vw,48px)}.day header{display:grid;grid-template-columns:2fr 1fr;gap:24px}.temp{font-family:Georgia,serif;font-size:clamp(58px,10vw,120px);line-height:1;margin-top:20px}.rating strong{display:block;color:#76565a;font-size:22px;margin:10px 0}.notice{border-left:4px solid #aab9c4;padding:14px 18px;background:#eef1ef}.lookgrid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:36px 0}.photo,.placeholder{width:100%;aspect-ratio:4/5;object-fit:cover;background:#d7d2c8}.placeholder{display:grid;place-items:center;color:#74746e}.essentials{display:grid;grid-template-columns:auto 1fr;gap:10px 24px;padding:24px 0;border-block:1px solid #cbc6bb}.routeTitle{margin-top:40px;font-size:28px}.stop{display:grid;grid-template-columns:90px 1fr;gap:18px;padding:18px 0;border-bottom:1px solid #d7d2c8}.stop p{margin:6px 0}.stop small{color:#73766f}.levelgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.level{padding:20px;background:#e6e2d9}.level strong{display:block;color:#76565a;margin-top:8px}nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:#222c27;border-radius:99px;padding:6px;display:flex;z-index:10}nav a{color:#fff;text-decoration:none;padding:12px 18px;min-width:64px;text-align:center}@media(max-width:700px){.day header,.lookgrid{grid-template-columns:1fr}.levelgrid{grid-template-columns:1fr}.hero{min-height:55vh}.stop{grid-template-columns:70px 1fr}nav{width:calc(100% - 24px);justify-content:space-around}nav a{padding:12px 8px}}
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap');
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #ebe8df;
+}
+
+body {
+  margin: 0;
+  background: #ebe8df;
+  color: #222923;
+  font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+a {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+}
+
+main {
+  width: 100%;
+  max-width: 1240px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding-bottom: 120px;
+  background: #f8f5ee;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.siteHeader {
+  min-height: 128px;
+  padding: 22px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: #f8f5ee;
+  border-bottom: 1px solid #d6d1c7;
+}
+
+.siteHeader > div {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.siteHeader strong {
+  color: #24332b;
+  font-size: clamp(25px, 4vw, 38px);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -.025em;
+}
+
+.siteHeader span {
+  color: #707870;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .12em;
+}
+
+.siteHeader p {
+  margin: 0;
+  color: #707870;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   SHARED
+========================================================= */
+
+.contentPage,
+.todayOutfit,
+.routeSection,
+.levelContent,
+.layerSection,
+.bringSection {
+  padding: clamp(52px, 7vw, 88px) clamp(24px, 5vw, 64px);
+}
+
+.contentPage {
+  min-height: calc(100vh - 128px);
+}
+
+.eyebrow {
+  margin: 0 0 14px;
+  color: #737c74;
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 800;
+  letter-spacing: .18em;
+}
+
+.lightEyebrow {
+  color: rgba(255, 255, 255, .62);
+}
+
+h2 {
+  margin: 0 0 36px;
+  color: #243029;
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -.04em;
+}
+
+/* =========================================================
+   DAY HERO
+========================================================= */
+
+.todayPage {
+  width: 100%;
+}
+
+.todayHero {
+  padding: clamp(48px, 7vw, 84px) clamp(24px, 5vw, 64px);
+  background: #304f40;
+  color: #f7f3e9;
+}
+
+.dateLabel {
+  margin: 0 0 24px;
+  color: rgba(247, 243, 233, .78);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.todayHero h1 {
+  max-width: 980px;
+  margin: 0;
+  color: #f7f3e9;
+  font-size: clamp(42px, 7vw, 80px);
+  line-height: 1.13;
+  font-weight: 800;
+  letter-spacing: -.045em;
+}
+
+.chapterLabel {
+  margin: 24px 0 44px;
+  color: rgba(247, 243, 233, .72);
+  font-size: 19px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   CLICKABLE LEVEL
+========================================================= */
+
+.levelButton {
+  width: 100%;
+  min-height: 84px;
+  padding: 20px 0;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, .24);
+  border-bottom: 1px solid rgba(255, 255, 255, .24);
+  background: transparent;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  text-align: left;
+}
+
+.levelButton:hover {
+  background: rgba(255, 255, 255, .045);
+}
+
+.levelButton > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.levelButton span {
+  color: rgba(247, 243, 233, .67);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.levelButton strong {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.levelButton svg {
+  flex: none;
+}
+
+/* =========================================================
+   WEATHER
+========================================================= */
+
+.weatherGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.weatherGrid > div {
+  padding: 32px 0 30px;
+}
+
+.weatherGrid > div + div {
+  padding-left: 36px;
+  border-left: 1px solid rgba(255, 255, 255, .22);
+}
+
+.weatherGrid span {
+  display: block;
+  margin-bottom: 10px;
+  color: rgba(247, 243, 233, .7);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.weatherGrid strong {
+  display: block;
+  color: #fff;
+  font-size: clamp(40px, 7vw, 70px);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -.05em;
+}
+
+.weatherText {
+  margin: 0;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, .22);
+  color: rgba(255, 255, 255, .9);
+  font-size: 17px;
+  line-height: 1.8;
+  font-weight: 500;
+}
+
+/* =========================================================
+   DESTINATION IMAGE
+========================================================= */
+
+.destinationHero {
+  position: relative;
+  width: 100%;
+  height: clamp(300px, 52vw, 590px);
+  margin: 0;
+  overflow: hidden;
+  background: #d5d2c9;
+}
+
+.destinationHero img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.destinationHero::after {
+  content: "";
+  position: absolute;
+  inset: 38% 0 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(20, 28, 23, 0),
+    rgba(20, 28, 23, .64)
+  );
+}
+
+.destinationHero figcaption {
+  position: absolute;
+  z-index: 2;
+  left: clamp(24px, 5vw, 64px);
+  right: clamp(24px, 5vw, 64px);
+  bottom: clamp(24px, 5vw, 48px);
+  color: #fff;
+}
+
+.destinationHero figcaption span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  opacity: .82;
+}
+
+.destinationHero figcaption strong {
+  display: block;
+  max-width: 800px;
+  font-size: clamp(22px, 4vw, 38px);
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+/* =========================================================
+   DAILY OUTFIT
+========================================================= */
+
+.todayOutfit {
+  background: #faf8f2;
+}
+
+.outfitRows {
+  width: 100%;
+  border-top: 1px solid #d2cdc2;
+}
+
+.outfitRows > div {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 20px;
+  padding: 22px 0;
+  border-bottom: 1px solid #d2cdc2;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.outfitRows b {
+  color: #687168;
+  font-weight: 700;
+}
+
+.outfitRows span {
+  color: #303730;
+  font-weight: 500;
+}
+
+.notice {
+  margin: 30px 0 0;
+  padding: 18px 20px;
+  background: #e7ece7;
+  border-left: 4px solid #304f40;
+  color: #354139;
+  font-size: 15px;
+  line-height: 1.75;
+  font-weight: 500;
+}
+
+.primaryButton {
+  width: min(100%, 440px);
+  min-height: 58px;
+  margin-top: 30px;
+  padding: 16px 20px;
+  border: 0;
+  border-radius: 10px;
+  background: #304f40;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  text-align: left;
+  font-weight: 700;
+}
+
+.primaryButton:hover {
+  background: #294538;
+}
+
+/* =========================================================
+   ITINERARY
+========================================================= */
+
+.routeSection {
+  background: #efede6;
+}
+
+.timeline {
+  border-top: 1px solid #cbc6ba;
+}
+
+.stop {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 24px;
+  padding: 25px 0;
+  border-bottom: 1px solid #cbc6ba;
+}
+
+.stop time {
+  padding-top: 2px;
+  color: #667168;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.stop b {
+  display: block;
+  color: #29312b;
+  font-size: 18px;
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+.stop p {
+  margin: 7px 0 13px;
+  color: #4e554f;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.mapLink {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #304f40;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.mapLink:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   SUB PAGE HEADER
+========================================================= */
+
+.subPageHeader {
+  padding: 18px clamp(24px, 5vw, 64px);
+  background: #f8f5ee;
+  border-bottom: 1px solid #d8d3c8;
+}
+
+.backButton {
+  min-height: 44px;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: #304f40;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.backButton:hover {
+  opacity: .68;
+}
+
+/* =========================================================
+   LEVEL GUIDE HERO
+========================================================= */
+
+.levelGuidePage {
+  width: 100%;
+}
+
+.levelGuideHero {
+  padding: clamp(50px, 8vw, 92px) clamp(24px, 5vw, 64px);
+  background: #304f40;
+  color: #fff;
+}
+
+.levelNumber {
+  display: block;
+  margin-bottom: 14px;
+  color: #cbd8cf;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.levelGuideHero h1 {
+  max-width: 850px;
+  margin: 0;
+  color: #fff;
+  font-size: clamp(48px, 8vw, 88px);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -.05em;
+}
+
+.levelTemperature {
+  margin: 22px 0 0;
+  color: #fff;
+  font-size: clamp(22px, 4vw, 34px);
+  font-weight: 600;
+}
+
+.levelSummary {
+  max-width: 700px;
+  margin: 22px 0 0;
+  color: rgba(255, 255, 255, .8);
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.dayContext {
+  max-width: 700px;
+  margin-top: 44px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, .24);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.dayContext span {
+  color: rgba(255, 255, 255, .6);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+
+.dayContext strong {
+  color: #fff;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.dayContext small {
+  color: rgba(255, 255, 255, .72);
+  font-size: 14px;
+}
+
+/* =========================================================
+   MORNING / DAY / EVENING
+========================================================= */
+
+.levelContent {
+  background: #faf8f2;
+}
+
+.timeWearGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid #cec9be;
+  border-bottom: 1px solid #cec9be;
+}
+
+.timeWearGrid article {
+  padding: 30px 28px 30px 0;
+}
+
+.timeWearGrid article + article {
+  padding-left: 28px;
+  border-left: 1px solid #cec9be;
+}
+
+.timeWearGrid span {
+  display: block;
+  margin-bottom: 5px;
+  color: #304f40;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.timeWearGrid strong {
+  display: block;
+  color: #818780;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+
+.timeWearGrid p {
+  margin: 18px 0 0;
+  color: #4e554f;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+/* =========================================================
+   LAYER SYSTEM
+========================================================= */
+
+.layerSection {
+  background: #efede6;
+}
+
+.layerList {
+  border-top: 1px solid #c9c4b9;
+}
+
+.layerList > div {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 22px;
+  padding: 24px 0;
+  border-bottom: 1px solid #c9c4b9;
+}
+
+.layerList > div > span {
+  color: #8a9089;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.layerList b {
+  color: #29312b;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.layerList p {
+  margin: 7px 0 0;
+  color: #596159;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   BRING
+========================================================= */
+
+.bringSection {
+  background: #faf8f2;
+}
+
+.bringCard {
+  padding: 24px;
+  border-radius: 12px;
+  background: #304f40;
+  color: #fff;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.bringCard svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.bringCard p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 600;
+}
+
+/* =========================================================
+   OVERVIEW
+========================================================= */
+
+.chapterTabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+  padding-bottom: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.chapterTabs::-webkit-scrollbar {
+  display: none;
+}
+
+.chapterTabs button {
+  flex: none;
+  min-height: 48px;
+  padding: 11px 17px;
+  border: 1px solid #aaa99f;
+  border-radius: 9px;
+  background: transparent;
+  color: #293029;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.chapterTabs button.active {
+  background: #304f40;
+  border-color: #304f40;
+  color: #fff;
+}
+
+.dayList {
+  border-top: 1px solid #cec9be;
+}
+
+.dayList button {
+  width: 100%;
+  min-height: 88px;
+  padding: 20px 4px;
+  border: 0;
+  border-bottom: 1px solid #cec9be;
+  background: transparent;
+  color: inherit;
+  display: grid;
+  grid-template-columns: 135px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  text-align: left;
+}
+
+.dayList button:hover {
+  background: rgba(48, 79, 64, .055);
+}
+
+.dayList span {
+  color: #6d766e;
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 600;
+}
+
+.dayList strong {
+  color: #29312b;
+  font-size: 17px;
+  line-height: 1.55;
+  font-weight: 700;
+}
+
+.dayList small {
+  color: #788078;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* =========================================================
+   DOCUMENTS
+========================================================= */
+
+.emptyCard {
+  padding: 30px;
+  border: 1px solid #d1ccc1;
+  border-radius: 14px;
+  background: #eeece5;
+}
+
+.emptyCard svg {
+  margin-bottom: 18px;
+  color: #304f40;
+}
+
+.emptyCard strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #29312b;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.emptyCard p {
+  max-width: 650px;
+  margin: 0;
+  color: #626a63;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+/* =========================================================
+   PACKING
+========================================================= */
+
+.packingProgress {
+  margin-bottom: 26px;
+  padding: 18px 20px;
+  border-radius: 10px;
+  background: #e7ece7;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  color: #304f40;
+}
+
+.packingProgress span {
+  font-weight: 600;
+}
+
+.packingProgress strong {
+  font-weight: 800;
+}
+
+.checklistPreview {
+  border-top: 1px solid #cec9be;
+}
+
+.checklistPreview label {
+  min-height: 66px;
+  padding: 10px 2px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-bottom: 1px solid #cec9be;
+  color: #303730;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.checklistPreview input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: #304f40;
+}
+
+/* =========================================================
+   BOTTOM NAV — 4 ITEMS
+========================================================= */
+
+.bottomNav {
+  position: fixed;
+  z-index: 100;
+  left: 50%;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+
+  width: min(calc(100% - 24px), 680px);
+  padding: 7px;
+
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2px;
+
+  background: #24332b;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 27px;
+
+  box-shadow: 0 12px 34px rgba(23, 29, 25, .2);
+}
+
+.bottomNav a {
+  min-width: 0;
+  min-height: 68px;
+  padding: 8px 3px;
+  border-radius: 21px;
+
+  color: #abb5ad;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  text-decoration: none;
+
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 700;
+
+  transition: background .18s ease, color .18s ease;
+}
+
+.bottomNav a:hover {
+  color: #fff;
+}
+
+.bottomNav a.active {
+  background: #f4f0e7;
+  color: #30483b;
+}
+
+.bottomNav a.active:hover {
+  color: #30483b;
+}
+
+.bottomNav svg {
+  display: block;
+  flex: none;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+  html,
+  body {
+    background: #f8f5ee;
+  }
+
+  main {
+    padding-bottom: 108px;
+  }
+
+  .siteHeader {
+    min-height: 116px;
+    padding: 19px 22px;
+  }
+
+  .siteHeader strong {
+    font-size: 24px;
+  }
+
+  .siteHeader span {
+    font-size: 12px;
+  }
+
+  .siteHeader p {
+    font-size: 12px;
+  }
+
+  .todayHero {
+    padding: 48px 24px 42px;
+  }
+
+  .dateLabel {
+    margin-bottom: 19px;
+    font-size: 14px;
+  }
+
+  .todayHero h1 {
+    font-size: clamp(38px, 10.5vw, 54px);
+    line-height: 1.15;
+  }
+
+  .chapterLabel {
+    margin: 20px 0 34px;
+    font-size: 16px;
+  }
+
+  .levelButton {
+    min-height: 76px;
+    padding: 17px 0;
+  }
+
+  .levelButton span {
+    font-size: 13px;
+  }
+
+  .levelButton strong {
+    font-size: 16px;
+  }
+
+  .weatherGrid > div {
+    padding: 25px 0;
+  }
+
+  .weatherGrid > div + div {
+    padding-left: 20px;
+  }
+
+  .weatherGrid span {
+    font-size: 13px;
+  }
+
+  .weatherGrid strong {
+    font-size: clamp(36px, 10vw, 50px);
+  }
+
+  .weatherText {
+    padding-top: 20px;
+    font-size: 15px;
+  }
+
+  .destinationHero {
+    height: 68vw;
+    min-height: 275px;
+    max-height: 420px;
+  }
+
+  .destinationHero figcaption {
+    left: 24px;
+    right: 24px;
+    bottom: 24px;
+  }
+
+  .destinationHero figcaption strong {
+    font-size: 22px;
+  }
+
+  .contentPage,
+  .todayOutfit,
+  .routeSection,
+  .levelContent,
+  .layerSection,
+  .bringSection {
+    padding: 50px 24px;
+  }
+
+  h2 {
+    margin-bottom: 30px;
+    font-size: 36px;
+  }
+
+  .outfitRows > div {
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 14px;
+    padding: 19px 0;
+    font-size: 15px;
+  }
+
+  .primaryButton {
+    width: 100%;
+  }
+
+  .stop {
+    grid-template-columns: 65px minmax(0, 1fr);
+    gap: 15px;
+    padding: 22px 0;
+  }
+
+  .stop time {
+    font-size: 13px;
+  }
+
+  .stop b {
+    font-size: 16px;
+  }
+
+  .stop p {
+    font-size: 14px;
+  }
+
+  /* LEVEL GUIDE */
+
+  .levelGuideHero {
+    padding: 54px 24px;
+  }
+
+  .levelNumber {
+    font-size: 15px;
+  }
+
+  .levelGuideHero h1 {
+    font-size: clamp(44px, 12vw, 62px);
+  }
+
+  .levelTemperature {
+    font-size: 22px;
+  }
+
+  .levelSummary {
+    font-size: 15px;
+  }
+
+  .dayContext {
+    margin-top: 34px;
+  }
+
+  .timeWearGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .timeWearGrid article {
+    padding: 24px 0;
+  }
+
+  .timeWearGrid article + article {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid #cec9be;
+  }
+
+  .layerList > div {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 14px;
+    padding: 21px 0;
+  }
+
+  .bringCard {
+    padding: 20px;
+  }
+
+  /* OVERVIEW */
+
+  .chapterTabs {
+    width: calc(100% + 24px);
+    margin-right: -24px;
+    padding-right: 24px;
+  }
+
+  .chapterTabs button {
+    min-height: 46px;
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+
+  .dayList button {
+    min-height: 84px;
+    grid-template-columns: 86px minmax(0, 1fr);
+    gap: 14px;
+    padding: 18px 2px;
+  }
+
+  .dayList span {
+    font-size: 13px;
+  }
+
+  .dayList strong {
+    font-size: 15px;
+  }
+
+  .dayList small {
+    display: none;
+  }
+
+  /* NAV */
+
+  .bottomNav {
+    bottom: max(8px, env(safe-area-inset-bottom));
+    width: calc(100% - 16px);
+    padding: 6px;
+    border-radius: 25px;
+  }
+
+  .bottomNav a {
+    min-height: 64px;
+    border-radius: 20px;
+    font-size: 11px;
+  }
+
+  .bottomNav svg {
+    width: 21px;
+    height: 21px;
+  }
+}
+
+/* =========================================================
+   SMALL PHONE
+========================================================= */
+
+@media (max-width: 390px) {
+  .siteHeader {
+    padding-inline: 18px;
+  }
+
+  .siteHeader strong {
+    font-size: 21px;
+  }
+
+  .todayHero,
+  .contentPage,
+  .todayOutfit,
+  .routeSection,
+  .levelContent,
+  .layerSection,
+  .bringSection {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .todayHero h1 {
+    font-size: 38px;
+  }
+
+  .weatherGrid > div + div {
+    padding-left: 15px;
+  }
+
+  .weatherGrid strong {
+    font-size: 36px;
+  }
+
+  .outfitRows > div {
+    grid-template-columns: 80px minmax(0, 1fr);
+  }
+
+  .stop {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+   /* =========================================================
+   DAILY HERO PLACEHOLDER
+========================================================= */
+
+.heroPlaceholder {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+
+  padding: 32px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #d8d6ce 0%,
+      #e6e2d9 100%
+    );
+
+  color: #657067;
+
+  text-align: center;
+}
+
+.heroPlaceholder::before {
+  content: "";
+
+  position: absolute;
+  inset: 18px;
+
+  border: 1px solid rgba(48, 79, 64, .18);
+
+  pointer-events: none;
+}
+
+.heroPlaceholder svg {
+  position: relative;
+  z-index: 1;
+
+  opacity: .7;
+}
+
+.heroPlaceholder > div {
+  position: relative;
+  z-index: 1;
+}
+
+.heroPlaceholder span {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #788078;
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+
+.heroPlaceholder strong {
+  display: block;
+
+  color: #435047;
+
+  font-size: clamp(22px, 4vw, 34px);
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.heroPlaceholder p {
+  margin: 9px 0 0;
+
+  color: #737b74;
+
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+}
+
+/* =========================================================
+   DOCUMENTS — COMPLETE UI
+========================================================= */
+
+.documentGroups {
+  display: grid;
+  gap: 52px;
+}
+
+.documentGroup h3 {
+  margin: 0 0 18px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.documentList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.documentCard {
+  min-height: 220px;
+  padding: 24px;
+  border: 1px solid #d1ccc1;
+  border-radius: 16px;
+  background: #faf8f2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.documentCard > div > span {
+  display: inline-flex;
+  margin-bottom: 14px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #e7ece7;
+  color: #526158;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+.documentCard strong {
+  display: block;
+  font-size: 22px;
+  line-height: 1.4;
+  font-weight: 800;
+}
+
+.documentCard p {
+  margin: 10px 0 0;
+  color: #646b65;
+  line-height: 1.7;
+}
+
+.documentCard > a {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #304f40;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.fileUnavailable {
+  width: fit-content;
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: #ebe8e0;
+  color: #888b85;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.relatedDocumentsSection {
+  padding: clamp(42px, 6vw, 68px) clamp(24px, 5vw, 60px);
+  background: #faf8f2;
+  border-bottom: 1px solid #d6d1c7;
+}
+
+.relatedDocumentsHeader {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.relatedDocumentsHeader h2 {
+  margin-bottom: 0;
+}
+
+.relatedDocumentsHeader > span {
+  color: #737a73;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.relatedDocumentTags {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.relatedDocumentTag {
+  min-width: 0;
+  min-height: 82px;
+  padding: 15px 16px;
+  border: 1px solid #d0cbc0;
+  border-radius: 12px;
+  background: #f4f1e9;
+  color: #304f40;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  text-decoration: none;
+}
+
+.relatedDocumentTag > span {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.relatedDocumentTag small {
+  color: #727a73;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.relatedDocumentTag strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.relatedDocumentTag.disabled {
+  color: #858a84;
+  background: #eeece5;
+}
+
+.relatedDocumentTag em {
+  color: #8a8d87;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.heroPlaceholder {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  padding: clamp(24px, 5vw, 60px);
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  background: #d9d5cc;
+  color: #566159;
+}
+
+.heroPlaceholder div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.heroPlaceholder span {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .15em;
+}
+
+.heroPlaceholder strong {
+  font-size: clamp(22px, 4vw, 34px);
+  font-weight: 800;
+}
+
+.heroPlaceholder p {
+  margin: 0;
+  font-weight: 500;
+}
+
+@media (max-width: 700px) {
+  .documentList,
+  .relatedDocumentTags {
+    grid-template-columns: 1fr;
+  }
+
+  .documentCard {
+    min-height: 0;
+    padding: 20px;
+  }
+
+  .relatedDocumentsHeader {
+    align-items: flex-start;
+  }
+}
+
+/* PACKING — PROGRESS / RESET */
+
+.packingProgress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.packingProgressActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+}
+
+.packingResetButton {
+  appearance: none;
+  min-height: 36px;
+  padding: 7px 12px;
+  border: 1px solid #b9b8ae;
+  border-radius: 9px;
+  background: transparent;
+  color: #304f40;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background .16s ease,
+    border-color .16s ease;
+}
+
+.packingResetButton:hover {
+  background: rgba(48, 79, 64, .06);
+  border-color: #8f978f;
+}
+
+.packingResetButton:focus-visible {
+  outline: 2px solid #304f40;
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .packingProgress {
+    gap: 12px;
+  }
+
+  .packingProgressActions {
+    gap: 9px;
+  }
+
+  .packingResetButton {
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+/* ==========================================
+   LOGIN PAGE
+========================================== */
+
+.loginPage{
+  position:relative;
+  min-height:100vh;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  overflow:hidden;
+
+  background:
+url("https://res.cloudinary.com/nc4uhdl3/image/upload/v1785602907/Moraine-Lake2025_ezztvz.jpg")
+center 35% / cover no-repeat;
+}
+
+.loginOverlay{
+  position:absolute;
+  inset:0;
+
+  background:
+    linear-gradient(
+      rgba(22,28,24,.45),
+      rgba(22,28,24,.68)
+    );
+}
+
+.loginCard{
+
+  position:relative;
+  z-index:2;
+
+  width:min(92vw,520px);
+
+  padding:56px;
+
+  border-radius:28px;
+
+  background:rgba(255,255,255,.14);
+
+  backdrop-filter:blur(22px);
+
+  -webkit-backdrop-filter:blur(22px);
+
+  border:1px solid rgba(255,255,255,.18);
+
+  box-shadow:
+      0 30px 80px rgba(0,0,0,.28);
+
+  color:white;
+   margin-top:60px;
+
+}
+
+.loginEyebrow{
+
+  margin:0;
+
+  opacity:.75;
+
+  letter-spacing:.18em;
+
+  font-size:12px;
+
+  font-weight:700;
+
+}
+
+.loginTitle{
+
+  margin:18px 0 10px;
+
+  font-size:72px;
+
+  line-height:.95;
+
+  color:white;
+   
+   letter-spacing:.08em;
+
+}
+
+.loginSubtitle{
+
+  margin:0 0 42px;
+
+  opacity:.82;
+
+}
+
+.loginInput{
+
+  width:100%;
+
+  height:58px;
+
+  padding:0 18px;
+
+  border-radius:14px;
+
+  border:1px solid rgba(255,255,255,.18);
+
+  background:rgba(255,255,255,.12);
+
+  color:white;
+
+  font-size:16px;
+
+}
+
+.loginInput::placeholder{
+
+  color:rgba(255,255,255,.55);
+
+}
+
+.loginInput:focus{
+
+  outline:none;
+
+  border-color:white;
+
+}
+
+.loginButton{
+
+  width:100%;
+
+  height:58px;
+
+  margin-top:18px;
+
+  border:none;
+
+  border-radius:14px;
+
+  background:white;
+
+  color:#24332b;
+
+  font-weight:700;
+
+  transition:.25s;
+
+}
+
+.loginButton:hover{
+
+  transform:translateY(-2px);
+
+}
+
+.loginError{
+
+  margin-top:16px;
+
+  color:#ffd5d5;
+
+  font-size:14px;
+
+}
