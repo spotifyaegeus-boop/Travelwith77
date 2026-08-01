@@ -43,14 +43,15 @@ export default function PasswordGate({
   }
 
   return (
-    <main className="loginPage">
-      <div className="loginOverlay" />
+  <main className="loginPage">
+    <div className="loginOverlay" />
 
-      <div className="loginCard">
+    <div className="loginCard">
 
-        <p className="loginEyebrow">
-          FAMILY TRAVEL GUIDE
-        </p>
+      <div className="loginBrand">
+        <div className="loginLeaf">
+          🍁
+        </div>
 
         <h1 className="loginTitle">
           CANADA
@@ -58,41 +59,45 @@ export default function PasswordGate({
           2026
         </h1>
 
+        <p className="loginEyebrow">
+          FAMILY TRAVEL GUIDE
+        </p>
+
         <p className="loginSubtitle">
           August 13 — August 28
         </p>
-
-        <input
-          ref={inputRef}
-          className="loginInput"
-          type="password"
-          placeholder="Travel Access Code"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            setError(false);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              login();
-            }
-          }}
-        />
-
-        <button
-          className="loginButton"
-          onClick={login}
-        >
-          Continue →
-        </button>
-
-        {error && (
-          <p className="loginError">
-            Access code incorrect. Please try again.
-          </p>
-        )}
-
       </div>
-    </main>
-  );
-}
+
+      <input
+        ref={inputRef}
+        className="loginInput"
+        type="password"
+        placeholder="Travel Access Code"
+        value={password}
+        onChange={(e) => {
+          setPassword(e.target.value);
+          setError(false);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            login();
+          }
+        }}
+      />
+
+      <button
+        className="loginButton"
+        onClick={login}
+      >
+        Start Journey →
+      </button>
+
+      {error && (
+        <p className="loginError">
+          Access code incorrect.
+        </p>
+      )}
+
+    </div>
+  </main>
+);
