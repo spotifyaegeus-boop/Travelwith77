@@ -42,62 +42,63 @@ export default function PasswordGate({
     return <>{children}</>;
   }
 
-  return (
-  <main className="loginPage">
-    <div className="loginOverlay" />
+   return (
+    <main className="loginPage">
+      <div className="loginOverlay" />
 
-    <div className="loginCard">
+      <div className="loginCard">
 
-      <div className="loginBrand">
-        <div className="loginLeaf">
-          🍁
+        <div className="loginBrand">
+          <div className="loginLeaf">
+            🍁
+          </div>
+
+          <h1 className="loginTitle">
+            CANADA
+            <br />
+            2026
+          </h1>
+
+          <p className="loginEyebrow">
+            FAMILY TRAVEL GUIDE
+          </p>
+
+          <p className="loginSubtitle">
+            August 13 — August 28
+          </p>
         </div>
 
-        <h1 className="loginTitle">
-          CANADA
-          <br />
-          2026
-        </h1>
+        <input
+          ref={inputRef}
+          className="loginInput"
+          type="password"
+          placeholder="Travel Access Code"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            setError(false);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              login();
+            }
+          }}
+        />
 
-        <p className="loginEyebrow">
-          FAMILY TRAVEL GUIDE
-        </p>
+        <button
+          className="loginButton"
+          onClick={login}
+        >
+          Start Journey →
+        </button>
 
-        <p className="loginSubtitle">
-          August 13 — August 28
-        </p>
+        {error && (
+          <p className="loginError">
+            Access code incorrect.
+          </p>
+        )}
+
       </div>
-
-      <input
-        ref={inputRef}
-        className="loginInput"
-        type="password"
-        placeholder="Travel Access Code"
-        value={password}
-        onChange={(e) => {
-          setPassword(e.target.value);
-          setError(false);
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            login();
-          }
-        }}
-      />
-
-      <button
-        className="loginButton"
-        onClick={login}
-      >
-        Start Journey →
-      </button>
-
-      {error && (
-        <p className="loginError">
-          Access code incorrect.
-        </p>
-      )}
-
-    </div>
-  </main>
-);
+    </main>
+  );
+}
