@@ -286,6 +286,7 @@ async function getItineraryMap(): Promise<
         row,
         '地圖連結',
         'Google Maps',
+        'Google 地圖連結',
         'mapUrl'
       );
 
