@@ -421,6 +421,8 @@ h2 {
   color: #4e554f;
   font-size: 15px;
   line-height: 1.75;
+   
+   white-space: pre-line;
 }
 
 .mapLink {
